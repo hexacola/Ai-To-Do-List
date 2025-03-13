@@ -38,14 +38,14 @@ const Header = () => {
           damping: 15
         }}
       >
-        PULP PRODUCTIVE
+        PRODUKTYVUMO ĮRANKIS
       </Title>
       <Subtitle
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        Crush tasks like a boss with AI-powered breakdown & execution mode
+        Įveikite užduotis efektyviai naudodami dirbtinio intelekto pagalbą ir vykdymo režimą
       </Subtitle>
     </HeaderContainer>
   );

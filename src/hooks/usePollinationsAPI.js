@@ -9,7 +9,7 @@ export const usePollinationsText = (prompt, options = {}) => {
   const { 
     seed = null, 
     model = 'openai', 
-    systemPrompt = "You are a highly efficient productivity assistant." 
+    systemPrompt = "Jūs esate labai efektyvus produktyvumo asistentas." 
   } = options;
 
   useEffect(() => {
@@ -116,62 +116,63 @@ export const generateTaskBreakdown = async (taskDescription) => {
   console.log("Generating subtasks for:", taskDescription);
   
   // Enhanced system prompt to create more personalized subtasks with anti-procrastination focus and time estimates
-  const systemPrompt = `You are THE DEFINITIVE productivity expert specializing in breaking tasks into PERFECT, actionable steps that DEFEAT PROCRASTINATION.
+  const systemPrompt = `Jūs esate PAGRINDINIS produktyvumo ekspertas, specializuojantis užduočių suskaidyme į TOBULUS, įgyvendinamus žingsnius, kurie ĮVEIKIA ATIDĖLIOJIMĄ.
 
-MISSION: For any task, provide 3-5 crystal-clear, extremely specific subtasks that represent the IDEAL way to accomplish it while overcoming procrastination. Each subtask should include a precise time estimate.
+MISIJA: Bet kokiai užduočiai pateikti 3-5 aiškius, konkrečius žingsnius, kurie atspindi IDEALŲ būdą ją atlikti, įveikiant atidėliojimą. Kiekvienas žingsnis turėtų turėti tikslų laiko įvertinimą.
 
-ANTI-PROCRASTINATION FOCUS:
-- Break tasks down into extremely small, concrete steps that take 5-15 minutes each
-- Make each step so clear and specific that it eliminates decision paralysis
-- Include clear starting points that reduce the activation energy needed to begin
-- Add motivation elements like "Set a 25-minute timer and focus without distractions"
-- For homework and study tasks, be extra specific with page numbers, question ranges, or specific outputs
-- Include a realistic time estimate for EACH subtask (in minutes)
+ANTI-ATIDĖLIOJIMO AKCENTAI:
+- Suskaidykite užduotis į itin mažus, konkrečius žingsnius, kurių kiekvienas užtrunka 5-15 minučių
+- Kiekvienas žingsnis turi būti toks aiškus ir konkretus, kad pašalintų sprendimo paralyžių
+- Įtraukite aiškius pradinius taškus, mažinančius energiją, reikalingą pradėti
+- Pridėkite motyvacijos elementų, pavyzdžiui, "Nustatykite 25 minučių laikmatį ir dirbkite be trukdžių"
+- Namų darbams ir mokymosi užduotims būkite itin konkretūs: puslapių numeriai, klausimų intervalai ar konkretūs rezultatai
+- Kiekvienam žingsniui nurodykite realų laiko įvertinimą (minutėmis)
 
-RULES FOR CREATING SUBTASKS:
-1. Each subtask MUST be concrete, specific, and immediately actionable (NO vague steps)
-2. Use precise, direct language focused on EXACTLY what action to take
-3. Arrange subtasks in the most logical sequential order for maximum efficiency
-4. Start each subtask with a strong action verb (Create, Write, Solve, Research, etc.)
-5. Tailor subtasks with remarkable precision to the specific domain and context of the task
-6. Break complex steps into simpler ones - each subtask should be ONE clear action
-7. Include specific tools, methods, or resources whenever relevant
-8. Avoid overly general steps - be as detailed and specific as possible
-9. MOST IMPORTANTLY: Include a realistic time estimate in minutes for EACH subtask based on its complexity
+ŽINGSNIŲ KŪRIMO TAISYKLĖS:
+1. Kiekvienas žingsnis PRIVALO būti konkretus, specifinis ir nedelsiant įgyvendinamas (JOKIŲ neaiškiŲ žingsnių)
+2. Naudokite tikslią, tiesioginę kalbą, sutelktą į TIKSLIAI tai, ką reikia daryti
+3. Išdėstykite žingsnius logiškiausia nuoseklia tvarka maksimaliam efektyvumui
+4. Pradėkite kiekvieną žingsnį stipriu veiksmo veiksmažodžiu (Sukurti, Parašyti, Išspręsti, Tyrinėti ir t.t.)
+5. Pritaikykite žingsnius su ypatingu tikslumu specifinei užduočiai ir kontekstui
+6. Sudėtingus žingsnius suskaidykite į paprastesnius - kiekvienas žingsnis turėtų būti VIENAS aiškus veiksmas
+7. Įtraukite konkrečius įrankius, metodus ar išteklius, kai tai aktualu
+8. Venkite pernelyg bendrų žingsnių - būkite kuo detalesni ir konkretesni
+9. SVARBIAUSIA: Kiekvienam žingsniui nurodykite realų laiko įvertinimą minutėmis, atsižvelgiant į jo sudėtingumą
 
-EXAMPLES OF EXCEPTIONAL SUBTASK BREAKDOWNS WITH TIME ESTIMATES:
-
-Task: "Edit a wedding video"
-Subtasks: [
-  {"text": "Import and organize all footage into folders (ceremony, reception, speeches, etc.)", "timeEstimate": 30},
-  {"text": "Create a rough assembly of the key moments in chronological order", "timeEstimate": 45},
-  {"text": "Edit the ceremony footage with best shots and smooth transitions", "timeEstimate": 60},
-  {"text": "Edit reception highlights and synchronize with 2-3 music tracks", "timeEstimate": 90},
-  {"text": "Color grade the footage and add final text overlays and effects", "timeEstimate": 45}
+PATEIKITE ATSAKYMĄ KAIP JSON MASYVO FORMATO ŽINGSNIUS:
+[
+  {"text": "Pirmas žingsnis su konkrečiu veiksmu", "timeEstimate": 15},
+  {"text": "Antras žingsnis su konkrečiu veiksmu", "timeEstimate": 25},
+  {"text": "Trečias žingsnis su konkrečiu veiksmu", "timeEstimate": 20}
 ]
 
-Task: "Do math homework"
-Subtasks: [
-  {"text": "Gather all required materials (textbook, notebook, calculator) and set up a clean workspace with water and a snack nearby", "timeEstimate": 10},
-  {"text": "Set a 25-minute timer and solve problems #1-5, writing out each step completely", "timeEstimate": 25},
-  {"text": "Take a 5-minute break, then solve problems #6-10 with the same focused approach", "timeEstimate": 30},
-  {"text": "Check all answers against the back of the book or by reworking each problem", "timeEstimate": 15},
-  {"text": "Create a list of any concepts you struggled with to review or ask about next class", "timeEstimate": 10}
+IŠSKIRTINIŲ UŽDUOČIŲ SKAIDYMO PAVYZDŽIAI SU LAIKO ĮVERTINIMAIS:
+
+Užduotis: "Redaguoti vestuvių vaizdo įrašą"
+Žingsniai: [
+  {"text": "Importuoti ir organizuoti visą filmuotą medžiagą į aplankus (ceremonija, vakarėlis, kalbos ir t.t.)", "timeEstimate": 30},
+  {"text": "Sukurti pagrindinių momentų chronologinį juodraštį", "timeEstimate": 45},
+  {"text": "Redaguoti ceremonijos vaizdus, pasirenkant geriausius kadrus ir sklandžius perėjimus", "timeEstimate": 60},
+  {"text": "Redaguoti vakarėlio akcentus ir sinchronizuoti su 2-3 muzikos takeliais", "timeEstimate": 90},
+  {"text": "Atlikti spalvų korekciją ir pridėti galutinius teksto užrašus bei efektus", "timeEstimate": 45}
 ]
 
-Task: "Write an essay"
-Subtasks: [
-  {"text": "Create a specific outline with exactly 3 main points and 2-3 supporting details for each", "timeEstimate": 20},
-  {"text": "Set a timer for 20 minutes and write only the introduction paragraph without editing", "timeEstimate": 20},
-  {"text": "Write the first body paragraph focusing on your strongest point (aim for 150-200 words)", "timeEstimate": 25},
-  {"text": "Continue with remaining body paragraphs one at a time, taking short breaks between each", "timeEstimate": 45},
-  {"text": "Write the conclusion, then edit the entire essay for grammar, clarity, and flow", "timeEstimate": 30}
+Užduotis: "Atlikti matematikos namų darbus"
+Žingsniai: [
+  {"text": "Surinkti visas reikalingas priemones (vadovėlį, sąsiuvinį, skaičiuotuvą) ir paruošti švarią darbo vietą su vandeniu ir užkandžiu šalia", "timeEstimate": 10},
+  {"text": "Nustatyti 25 minučių laikmatį ir išspręsti 1-5 uždavinius, išrašant kiekvieną žingsnį pilnai", "timeEstimate": 25},
+  {"text": "Padaryti 5 minučių pertrauką, tada išspręsti 6-10 uždavinius taikant tą patį koncentruotą metodą", "timeEstimate": 30},
+  {"text": "Patikrinti visus atsakymus pagal vadovėlio galą arba perskaičiuojant kiekvieną uždavinį", "timeEstimate": 15},
+  {"text": "Sudaryti sąrašą koncepcijų, su kuriomis turėjote sunkumų, kad galėtumėte peržiūrėti ar paklausti per kitą pamoką", "timeEstimate": 10}
 ]
 
-Remember, your subtasks need to be TAILORED to the exact task at hand, considering its specific context, complexity, and domain. Focus especially on making steps SMALL and SPECIFIC to overcome procrastination, and provide ACCURATE time estimates for each subtask based on its complexity.`;
+Atkreipkite dėmesį, kad jūsų žingsniai turi būti konkretūs, veiksmingi ir tiesiogiai padėti įveikti atidėliojimą. Grąžinkite tik JSON masyvą su objektais.`;
   
   try {
-    // First try with jsonMode
+    // Log request for debugging
+    console.log("Sending task breakdown request for:", taskDescription);
+    
+    // First try with standard prompt
     const response = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: {
@@ -180,16 +181,20 @@ Remember, your subtasks need to be TAILORED to the exact task at hand, consideri
       body: JSON.stringify({
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Break down this task into specific, actionable subtasks with time estimates that will help me OVERCOME PROCRASTINATION and complete it efficiently: "${taskDescription}"
-          
-Your response should ONLY contain the list of subtasks with time estimates for each one. Format them as a clean JSON array of objects with "text" and "timeEstimate" (in minutes) properties.` }
+          { role: 'user', content: `Suskaidykite šią užduotį į 3-5 konkrečius, įgyvendinamus žingsnius su laiko įvertinimais: "${taskDescription}"
+
+Pateikite tik JSON masyvo formato atsakymą su objektais, kur "text" yra konkretus žingsnis, o "timeEstimate" yra jo laiko įvertinimas minutėmis. Pavyzdžiui:
+[
+  {"text": "Pirmas žingsnis", "timeEstimate": 15},
+  {"text": "Antras žingsnis", "timeEstimate": 20}
+]` }
         ],
-        model: 'openai',
-        jsonMode: true
+        model: 'openai'
       })
     });
 
     if (!response.ok) {
+      console.error(`API request failed with status ${response.status}`);
       throw new Error(`API request failed with status ${response.status}`);
     }
 
@@ -197,9 +202,27 @@ Your response should ONLY contain the list of subtasks with time estimates for e
     const text = await response.text();
     console.log("Raw API response:", text);
     
+    // Try to find JSON in the response
+    const jsonRegex = /\[\s*{[\s\S]*}\s*\]/;
+    const jsonMatch = text.match(jsonRegex);
+    
+    if (jsonMatch) {
+      try {
+        const parsedData = JSON.parse(jsonMatch[0]);
+        console.log("Successfully parsed JSON:", parsedData);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          return parsedData;
+        }
+      } catch (jsonError) {
+        console.error("Error parsing JSON from match:", jsonError);
+      }
+    }
+    
+    // Alternate approach - try to parse the whole response as JSON
     try {
       // Try to parse as JSON
       const data = JSON.parse(text);
+      console.log("Parsed complete response as JSON:", data);
       
       // Handle case where API returns {subtasks: [...]} format
       if (data && data.subtasks && Array.isArray(data.subtasks)) {
@@ -208,7 +231,7 @@ Your response should ONLY contain the list of subtasks with time estimates for e
       
       if (Array.isArray(data)) {
         // Check if we have objects with text and timeEstimate properties
-        if (data[0] && (data[0].text || data[0].timeEstimate)) {
+        if (data.length > 0 && (data[0].text || data[0].timeEstimate)) {
           return data;
         } else {
           // Convert simple strings to objects with default time estimates
@@ -219,65 +242,132 @@ Your response should ONLY contain the list of subtasks with time estimates for e
             return item;
           });
         }
-      } else if (data.content) {
-        // Try to extract JSON array from content
-        const matches = data.content.match(/\[.*\]/s);
-        if (matches) {
-          const parsedArray = JSON.parse(matches[0]);
-          // Check if we need to convert to objects
-          if (typeof parsedArray[0] === 'string') {
-            return parsedArray.map(item => ({ text: item, timeEstimate: estimateSubtaskTime(item) }));
-          }
-          return parsedArray;
-        } else {
-          // Split by newlines or commas if not JSON format
-          const items = data.content.split(/[\n,]+/).map(item => 
-            item.replace(/^["'\s\d\-•.]+|["'\s]+$/g, '')
-          ).filter(Boolean);
-          return items.map(text => ({ text, timeEstimate: estimateSubtaskTime(text) }));
-        }
       }
-      return Array.isArray(data) ? data : [data];
     } catch (parseError) {
-      console.error("Error parsing JSON response:", parseError);
-      
-      // Fall back to text processing
-      // Look for array patterns in the text
-      const arrayMatch = text.match(/\[(.*)\]/s);
-      if (arrayMatch) {
-        try {
-          const parsedArray = JSON.parse(`[${arrayMatch[1]}]`);
-          if (typeof parsedArray[0] === 'string') {
-            return parsedArray.map(item => ({ text: item, timeEstimate: estimateSubtaskTime(item) }));
-          }
-          return parsedArray;
-        } catch (e) {
-          // If still fails, split by quotes or line breaks
-          const items = arrayMatch[1]
-            .split(/["',\n]+/)
-            .map(item => item.trim())
-            .filter(Boolean);
-          return items.map(text => ({ text, timeEstimate: estimateSubtaskTime(text) }));
-        }
-      }
-      
-      // Check for numbered list format (1. First step, 2. Second step)
-      const numberedList = text.match(/\d+\.\s+[^\n]+/g);
-      if (numberedList) {
-        return numberedList.map(item => {
-          const text = item.replace(/^\d+\.\s+/, '').trim();
-          return { text, timeEstimate: estimateSubtaskTime(text) };
+      console.error("Error parsing as direct JSON:", parseError);
+    }
+    
+    // If we couldn't parse any JSON, try to extract subtasks from text
+    console.log("Fallback to text processing");
+    
+    // Split text by numbered items or bullet points
+    const lines = text.split(/\n/).filter(line => line.trim().length > 0);
+    const subtaskRegex = /^(\d+[\.\)]\s*|\*\s+|[-•]\s+)(.+)/;
+    
+    const subtasks = [];
+    
+    for (const line of lines) {
+      const match = line.match(subtaskRegex);
+      if (match) {
+        const subtaskText = match[2].trim();
+        // Try to find time estimates in the text (e.g., "... (15 min)")
+        const timeMatch = subtaskText.match(/\((\d+)\s*min(utes)?\)/i);
+        const timeEstimate = timeMatch ? parseInt(timeMatch[1]) : estimateSubtaskTime(subtaskText);
+        
+        subtasks.push({
+          text: subtaskText.replace(/\s*\(\d+\s*min(utes)?\)/i, ''),
+          timeEstimate
         });
       }
-      
-      // Last resort: split by line breaks or numbered items
-      const items = text
-        .split(/[\n,]+/)
-        .map(item => item.replace(/^\s*\d+[\.\)]\s*|["'\s•-]+/g, '').trim())
-        .filter(Boolean)
-        .slice(0, 5);
-      return items.map(text => ({ text, timeEstimate: estimateSubtaskTime(text) }));
     }
+    
+    // If we found subtasks this way, return them
+    if (subtasks.length > 0) {
+      console.log("Found subtasks through text processing:", subtasks);
+      return subtasks;
+    }
+    
+    // Last resort: fall back to default subtasks
+    console.log("Falling back to default subtasks");
+    
+    // Try one more time with a more explicit request
+    try {
+      console.log("Trying a second approach with a more structured prompt");
+      
+      const explicitResponse = await fetch('https://text.pollinations.ai/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [
+            { 
+              role: 'system', 
+              content: `Jūs esate funkcija, kuri generuoja užduoties žingsnius.
+  
+INPUT FORMAT:
+- task_description: užduoties aprašymas
+  
+OUTPUT FORMAT:
+[
+  {"text": "pirmas žingsnis", "timeEstimate": 15},
+  {"text": "antras žingsnis", "timeEstimate": 20},
+  {"text": "trečias žingsnis", "timeEstimate": 30}
+]
+
+RULES:
+1. Sugeneruok 3-5 žingsnius užduočiai
+2. Kiekvienas žingsnis turi turėti aiškų veiksmą
+3. Priskirk realistiškus laiko įvertinimus minutėmis
+4. Grąžink tik JSON masyvą be jokių papildomų paaiškinimų ar teksto
+5. Užtikrink, kad JSON masyvas būtų teisingas` 
+            },
+            { 
+              role: 'user', 
+              content: `{"task_description": "${taskDescription}"}` 
+            }
+          ],
+          model: 'openai'
+        })
+      });
+      
+      if (!explicitResponse.ok) {
+        throw new Error("Second API request failed");
+      }
+      
+      const explicitText = await explicitResponse.text();
+      console.log("Second approach response:", explicitText);
+      
+      // Try to parse JSON directly
+      try {
+        const jsonData = JSON.parse(explicitText);
+        if (Array.isArray(jsonData) && jsonData.length > 0) {
+          return jsonData.map(item => {
+            if (typeof item === "object" && item !== null) {
+              // Ensure timeEstimate is a number
+              const timeEstimate = typeof item.timeEstimate === "number" ? 
+                item.timeEstimate : estimateSubtaskTime(item.text || "");
+              
+              return {
+                text: item.text || `Žingsnis ${jsonData.indexOf(item) + 1}`,
+                timeEstimate
+              };
+            }
+            return { text: String(item), timeEstimate: 15 };
+          });
+        }
+      } catch (jsonError) {
+        console.error("Error parsing second approach JSON:", jsonError);
+        
+        // Try to extract JSON from text
+        const jsonMatch = explicitText.match(/\[\s*{[\s\S]*}\s*\]/);
+        if (jsonMatch) {
+          try {
+            const extractedJson = JSON.parse(jsonMatch[0]);
+            if (Array.isArray(extractedJson) && extractedJson.length > 0) {
+              return extractedJson;
+            }
+          } catch (e) {
+            console.error("Failed to parse extracted JSON from second approach");
+          }
+        }
+      }
+    } catch (secondAttemptError) {
+      console.error("Second attempt also failed:", secondAttemptError);
+    }
+    
+    throw new Error("Could not parse task breakdown, using defaults");
+    
   } catch (error) {
     console.error('Error generating task breakdown:', error);
     
@@ -285,72 +375,80 @@ Your response should ONLY contain the list of subtasks with time estimates for e
     const taskLower = taskDescription.toLowerCase();
     
     // Check specifically for video editing tasks
-    if (taskLower.includes('edit') && (taskLower.includes('video') || taskLower.includes('film') || taskLower.includes('footage'))) {
+    if ((taskLower.includes('edit') || taskLower.includes('redaguoti')) && 
+        (taskLower.includes('video') || taskLower.includes('film') || taskLower.includes('footage') || 
+         taskLower.includes('vaizdo') || taskLower.includes('filmas') || taskLower.includes('įrašą'))) {
       return [
-        { text: `Import and organize all footage into clearly labeled folders (by scene/event)`, timeEstimate: 30 },
-        { text: `Review all footage and select the best clips, marking in/out points`, timeEstimate: 45 },
-        { text: `Create a rough cut assembly of the main sequence with basic transitions`, timeEstimate: 60 },
-        { text: `Add music tracks and synchronize with key moments in the footage`, timeEstimate: 40 },
-        { text: `Apply color correction, effects, and export the final video`, timeEstimate: 50 }
+        { text: `Importuoti ir sutvarkyti visą vaizdo medžiagą į aiškiai pažymėtus aplankus (pagal sceną/įvykį)`, timeEstimate: 30 },
+        { text: `Peržiūrėti visą filmuotą medžiagą ir pasirinkti geriausius klipus, pažymint pradžios/pabaigos taškus`, timeEstimate: 45 },
+        { text: `Sukurti pradinį pagrindinės sekos montažą su baziniais perėjimais`, timeEstimate: 60 },
+        { text: `Pridėti muzikos takelius ir sinchronizuoti su pagrindiniais momentais vaizdo įraše`, timeEstimate: 40 },
+        { text: `Pritaikyti spalvų korekciją, efektus ir eksportuoti galutinį vaizdo įrašą`, timeEstimate: 50 }
       ];
     }
     // Enhanced defaults for homework and study tasks
-    else if (taskLower.includes('homework') || taskLower.includes('assignment')) {
+    else if (taskLower.includes('homework') || taskLower.includes('assignment') || 
+             taskLower.includes('namų darbai') || taskLower.includes('užduotis')) {
       return [
-        { text: `Prepare your workspace: gather all materials, remove distractions, and get water/snack`, timeEstimate: 10 },
-        { text: `Break the assignment into small chunks (problems 1-5, pages 1-3, etc.)`, timeEstimate: 15 },
-        { text: `Set a 25-minute timer and work on the first chunk with complete focus`, timeEstimate: 25 },
-        { text: `Take a 5-minute break, then continue with the next chunk`, timeEstimate: 30 },
-        { text: `Review your work carefully and mark anything you need help with`, timeEstimate: 20 }
+        { text: `Paruošti darbo vietą: surinkti visas reikalingas priemones, pašalinti trukdžius, pasiruošti vandens/užkandį`, timeEstimate: 10 },
+        { text: `Suskirstyti užduotį į mažas dalis (1-5 uždaviniai, 1-3 puslapiai ir t.t.)`, timeEstimate: 15 },
+        { text: `Nustatyti 25 minučių laikmatį ir dirbti su pirma dalimi visiškoje koncentracijoje`, timeEstimate: 25 },
+        { text: `Padaryti 5 minučių pertrauką, tada tęsti su kita dalimi`, timeEstimate: 30 },
+        { text: `Atidžiai peržiūrėti savo darbą ir pažymėti vietas, kur reikia pagalbos`, timeEstimate: 20 }
       ];
-    } else if (taskLower.includes('study') || taskLower.includes('exam') || taskLower.includes('test')) {
+    } else if (taskLower.includes('study') || taskLower.includes('exam') || taskLower.includes('test') ||
+               taskLower.includes('mokytis') || taskLower.includes('egzaminas') || taskLower.includes('testas')) {
       return [
-        { text: `Create a specific study plan listing all topics to cover in order of difficulty`, timeEstimate: 20 },
-        { text: `Set up a distraction-free environment with all needed materials`, timeEstimate: 15 },
-        { text: `Study one topic for 25 minutes using active methods (flashcards, practice problems)`, timeEstimate: 25 },
-        { text: `Take a 5-minute break, then quiz yourself on what you just studied`, timeEstimate: 15 },
-        { text: `Move to the next topic and repeat the process, reviewing previous topics briefly`, timeEstimate: 30 }
+        { text: `Sukurti specifinį mokymosi planą, išvardijant visas temas pagal sudėtingumą`, timeEstimate: 20 },
+        { text: `Paruošti aplinką be trukdžių su visomis reikalingomis priemonėmis`, timeEstimate: 15 },
+        { text: `Mokytis vienos temos 25 minutes, naudojant aktyvius metodus (atminties korteles, praktines užduotis)`, timeEstimate: 25 },
+        { text: `Padaryti 5 minučių pertrauką, tada patikrinti save, ką tik ką išmokote`, timeEstimate: 15 },
+        { text: `Pereiti prie kitos temos ir pakartoti procesą, trumpai peržiūrint ankstesnes temas`, timeEstimate: 30 }
       ];
-    } else if (taskLower.includes('write') || taskLower.includes('essay') || taskLower.includes('paper')) {
+    } else if (taskLower.includes('write') || taskLower.includes('essay') || taskLower.includes('paper') ||
+               taskLower.includes('rašyti') || taskLower.includes('rašinys') || taskLower.includes('darbas')) {
       return [
-        { text: `Create a detailed outline with main points and supporting details`, timeEstimate: 25 },
-        { text: `Set a timer for 20 minutes and write only the introduction paragraph`, timeEstimate: 20 },
-        { text: `Write each body paragraph one at a time with short breaks between`, timeEstimate: 40 },
-        { text: `Complete the conclusion, focusing only on summarizing main points`, timeEstimate: 15 },
-        { text: `Edit the entire document for clarity, grammar, and coherence`, timeEstimate: 30 }
+        { text: `Sukurti detalų planą su pagrindiniais punktais ir juos pagrindžiančiomis detalėmis`, timeEstimate: 25 },
+        { text: `Nustatyti 20 minučių laikmatį ir parašyti tik įžanginę pastraipą`, timeEstimate: 20 },
+        { text: `Rašyti kiekvieną pagrindinę pastraipą po vieną, darant trumpas pertraukas tarp jų`, timeEstimate: 40 },
+        { text: `Užbaigti išvadą, sutelkiant dėmesį tik į pagrindinių punktų apibendrinimą`, timeEstimate: 15 },
+        { text: `Redaguoti visą dokumentą dėl aiškumo, gramatikos ir rišlumo`, timeEstimate: 30 }
       ];
-    } else if (taskLower.includes('clean') || taskLower.includes('organize') || taskLower.includes('tidy')) {
+    } else if (taskLower.includes('clean') || taskLower.includes('organize') || taskLower.includes('tidy') ||
+               taskLower.includes('valyti') || taskLower.includes('organizuoti') || taskLower.includes('tvarkyti')) {
       return [
-        { text: `Set a 10-minute timer and quickly clear all obvious trash and clutter`, timeEstimate: 10 },
-        { text: `Focus on one small area (desk, shelf, drawer) at a time completely`, timeEstimate: 15 },
-        { text: `Sort items into keep, donate, and trash piles without overthinking`, timeEstimate: 20 },
-        { text: `Clean surfaces thoroughly starting from top to bottom`, timeEstimate: 25 },
-        { text: `Organize remaining items logically, placing frequent-use items most accessibly`, timeEstimate: 15 }
+        { text: `Nustatyti 10 minučių laikmatį ir greitai pašalinti visas akivaizdžias šiukšles ir nereikalingus daiktus`, timeEstimate: 10 },
+        { text: `Susitelkti į vieną mažą vietą (stalą, lentyną, stalčių) vienu metu`, timeEstimate: 15 },
+        { text: `Surūšiuoti daiktus į "pasilikti", "atiduoti" ir "išmesti" krūvas, per daug negalvojant`, timeEstimate: 20 },
+        { text: `Kruopščiai nuvalyti paviršius, pradedant nuo viršaus iki apačios`, timeEstimate: 25 },
+        { text: `Logiškai sutvarkyti likusius daiktus, dažniausiai naudojamus padedant lengviausiai prieinamose vietose`, timeEstimate: 15 }
       ];
-    } else if (taskLower.includes('read') || taskLower.includes('book') || taskLower.includes('chapter')) {
+    } else if (taskLower.includes('read') || taskLower.includes('book') || taskLower.includes('chapter') ||
+               taskLower.includes('skaityti') || taskLower.includes('knyga') || taskLower.includes('skyrius')) {
       return [
-        { text: `Find a comfortable, distraction-free spot with good lighting`, timeEstimate: 10 },
-        { text: `Set a timer for 25 minutes of focused reading (no phone or social media)`, timeEstimate: 25 },
-        { text: `Take notes on key points or use sticky notes to mark important sections`, timeEstimate: 20 },
-        { text: `After each chapter, write a 2-3 sentence summary in your own words`, timeEstimate: 15 },
-        { text: `Take a 5-minute break, then continue with the next section`, timeEstimate: 30 }
+        { text: `Rasti patogią, be trukdžių vietą su geru apšvietimu`, timeEstimate: 10 },
+        { text: `Nustatyti 25 minučių laikmatį sutelktam skaitymui (be telefono ar socialinių tinklų)`, timeEstimate: 25 },
+        { text: `Daryti užrašus apie pagrindinius punktus arba naudoti lipnias pastabas svarbių vietų žymėjimui`, timeEstimate: 20 },
+        { text: `Po kiekvieno skyriaus parašyti 2-3 sakinių santrauką savo žodžiais`, timeEstimate: 15 },
+        { text: `Padaryti 5 minučių pertrauką, tada tęsti su kitu skyriumi`, timeEstimate: 30 }
       ];
-    } else if (taskLower.includes('present') || taskLower.includes('presentation') || taskLower.includes('speech')) {
+    } else if (taskLower.includes('present') || taskLower.includes('presentation') || taskLower.includes('speech') ||
+               taskLower.includes('pristatyti') || taskLower.includes('pristatymas') || taskLower.includes('kalba')) {
       return [
-        { text: `Create a detailed outline with your main points and supporting evidence`, timeEstimate: 30 },
-        { text: `Develop visual aids or slides with minimal text and relevant images`, timeEstimate: 45 },
-        { text: `Practice your presentation once through without stopping`, timeEstimate: 15 },
-        { text: `Record yourself and note areas to improve (clarity, pace, gestures)`, timeEstimate: 20 },
-        { text: `Practice 3 more times, focusing on smooth transitions and timing`, timeEstimate: 30 }
+        { text: `Sukurti detalų planą su pagrindiniais punktais ir juos pagrindžiančiais įrodymais`, timeEstimate: 30 },
+        { text: `Parengti vizualinius elementus ar skaidres su minimaliu tekstu ir tinkamais paveikslėliais`, timeEstimate: 45 },
+        { text: `Repetuoti pristatymą vieną kartą iki galo nesustojant`, timeEstimate: 15 },
+        { text: `Įrašyti save ir pažymėti tobulintinas sritis (aiškumas, tempas, gestai)`, timeEstimate: 20 },
+        { text: `Repetuoti dar 3 kartus, sutelkiant dėmesį į sklandžius perėjimus ir laiko valdymą`, timeEstimate: 30 }
       ];
     } else {
       // Generic defaults focused on anti-procrastination
       return [
-        { text: `Break "${taskDescription}" into 3-5 small, achievable parts`, timeEstimate: 15 },
-        { text: `Set up your environment: remove distractions and gather all needed materials`, timeEstimate: 10 },
-        { text: `Set a 25-minute timer and work on the first part with complete focus`, timeEstimate: 25 },
-        { text: `Take a 5-minute break, then continue with the next part`, timeEstimate: 30 },
-        { text: `Review your progress and adjust your plan if needed`, timeEstimate: 15 }
+        { text: `Suskaidyti "${taskDescription}" į 3-5 mažas, pasiekiamas dalis`, timeEstimate: 15 },
+        { text: `Paruošti aplinką: pašalinti trukdžius ir surinkti visas reikalingas priemones`, timeEstimate: 10 },
+        { text: `Nustatyti 25 minučių laikmatį ir dirbti su pirma dalimi visiškoje koncentracijoje`, timeEstimate: 25 },
+        { text: `Padaryti 5 minučių pertrauką, tada tęsti su kita dalimi`, timeEstimate: 30 },
+        { text: `Peržiūrėti savo progresą ir pakoreguoti planą, jei reikia`, timeEstimate: 15 }
       ];
     }
   }
@@ -358,13 +456,16 @@ Your response should ONLY contain the list of subtasks with time estimates for e
 
 // Helper function to estimate time for a subtask based on the text
 const estimateSubtaskTime = (subtaskText) => {
+  if (!subtaskText) return 15; // Ensure we have text
+  
   const text = subtaskText.toLowerCase();
   
   // Check for explicitly mentioned time
-  const timeMatch = text.match(/(\d+)[ -]*(minute|min|hour|hr)/);
+  const timeMatch = text.match(/(\d+)[ -]*(minute|min|hour|hr|minut|val)/);
   if (timeMatch) {
     // Convert hours to minutes if needed
-    if (timeMatch[2].startsWith('hour') || timeMatch[2].startsWith('hr')) {
+    if (timeMatch[2].startsWith('hour') || timeMatch[2].startsWith('hr') || 
+        timeMatch[2].startsWith('val')) {
       return parseInt(timeMatch[1], 10) * 60;
     }
     return parseInt(timeMatch[1], 10);
@@ -377,97 +478,37 @@ const estimateSubtaskTime = (subtaskText) => {
   // Domain-specific time estimates
   
   // Research activities
-  if (text.includes('research') || text.includes('find') || text.includes('look up') || text.includes('search')) {
-    if (text.includes('in-depth') || text.includes('detailed') || text.includes('comprehensive')) {
+  if (text.includes('research') || text.includes('find') || text.includes('look up') || text.includes('search') ||
+      text.includes('tyrinė') || text.includes('ieško') || text.includes('rasti') || text.includes('paieška')) {
+    if (text.includes('in-depth') || text.includes('detailed') || text.includes('comprehensive') ||
+        text.includes('išsam') || text.includes('detalų') || text.includes('nuodug')) {
       return Math.max(45, complexity);
     }
     return Math.max(20, Math.min(45, complexity));
   }
   
   // Writing activities
-  if (text.includes('write') || text.includes('create') || text.includes('draft') || text.includes('compose')) {
-    if (text.includes('outline') || text.includes('brief')) {
+  if (text.includes('write') || text.includes('create') || text.includes('draft') || text.includes('compose') ||
+      text.includes('rašy') || text.includes('kur') || text.includes('juodraš') || text.includes('komponuo')) {
+    if (text.includes('outline') || text.includes('brief') || 
+        text.includes('plan') || text.includes('trump')) {
       return Math.max(15, Math.min(30, complexity));
     }
-    if (text.includes('essay') || text.includes('report') || text.includes('paper')) {
+    if (text.includes('essay') || text.includes('report') || text.includes('paper') ||
+        text.includes('raši') || text.includes('ataska') || text.includes('darb')) {
       return Math.max(45, complexity * 1.5);
     }
     return Math.max(30, complexity);
-  }
-  
-  // Design/creative activities
-  if (text.includes('design') || text.includes('draw') || text.includes('sketch') || text.includes('create')) {
-    if (text.includes('mockup') || text.includes('prototype') || text.includes('wireframe')) {
-      return Math.max(30, complexity * 1.2);
-    }
-    return Math.max(30, complexity);
-  }
-  
-  // Reading activities
-  if (text.includes('read') || text.includes('review') || text.includes('study')) {
-    if (text.includes('chapter') || text.includes('book')) {
-      return Math.max(45, complexity * 1.3);
-    }
-    return Math.max(20, complexity);
-  }
-  
-  // Meeting/communication activities
-  if (text.includes('meet') || text.includes('call') || text.includes('email') || text.includes('message')) {
-    if (text.includes('prepare') || text.includes('plan')) {
-      return Math.max(15, complexity * 0.8);
-    }
-    if (text.includes('follow') && text.includes('up')) {
-      return Math.max(10, complexity * 0.7);
-    }
-    return Math.max(15, complexity * 0.9);
-  }
-  
-  // Planning activities
-  if (text.includes('plan') || text.includes('organize') || text.includes('schedule') || text.includes('outline')) {
-    return Math.max(15, complexity * 0.8);
-  }
-  
-  // Setup activities
-  if (text.includes('set up') || text.includes('prepare') || text.includes('organize') || text.includes('gather')) {
-    return Math.max(10, complexity * 0.6);
-  }
-  
-  // Review/edit activities
-  if (text.includes('review') || text.includes('check') || text.includes('edit') || text.includes('revise')) {
-    return Math.max(15, Math.min(45, complexity * 0.7));
-  }
-
-  // Programming activities
-  if (text.includes('code') || text.includes('program') || text.includes('develop') || text.includes('implement') || text.includes('debug')) {
-    if (text.includes('debug') || text.includes('fix') || text.includes('troubleshoot')) {
-      return Math.max(30, complexity * 1.4); // Debugging often takes longer
-    }
-    if (text.includes('feature') || text.includes('function')) {
-      return Math.max(45, complexity * 1.5);
-    }
-    return Math.max(25, complexity * 1.2);
-  }
-  
-  // Analysis activities
-  if (text.includes('analyze') || text.includes('evaluate') || text.includes('assess')) {
-    return Math.max(20, complexity * 1.1);
-  }
-  
-  // Presentation activities
-  if (text.includes('present') || text.includes('pitch') || text.includes('demonstration')) {
-    if (text.includes('prepare') || text.includes('create')) {
-      return Math.max(30, complexity * 1.2);
-    }
-    return Math.max(15, complexity * 0.8);
   }
   
   // Timer-based activities
-  if (text.includes('timer') && text.match(/\d+/)) {
+  if ((text.includes('timer') || text.includes('laikmat')) && text.match(/\d+/)) {
     // Extract the timer duration
-    const duration = text.match(/(\d+)[ -]*(minute|min|hour|hr)/);
+    const duration = text.match(/(\d+)[ -]*(minute|min|hour|hr|minut|val)/);
     if (duration) {
       // Convert hours to minutes if needed
-      if (duration[2].startsWith('hour') || duration[2].startsWith('hr')) {
+      if (duration[2].startsWith('hour') || duration[2].startsWith('hr') || 
+          duration[2].startsWith('val')) {
         return parseInt(duration[1], 10) * 60;
       }
       return parseInt(duration[1], 10);
@@ -475,22 +516,28 @@ const estimateSubtaskTime = (subtaskText) => {
   }
   
   // Quantity-based estimation (if the task mentions a specific number of items)
-  const quantityMatch = text.match(/(\d+)\s*(items|questions|problems|pages|slides|sections)/);
+  const quantityMatch = text.match(/(\d+)\s*(items|questions|problems|pages|slides|sections|elementų|klausimų|uždavinių|puslapių|skaidrių|dalių)/);
   if (quantityMatch) {
     const quantity = parseInt(quantityMatch[1], 10);
-    const itemType = quantityMatch[2];
+    const itemType = quantityMatch[2].toLowerCase();
     
     switch (itemType) {
       case 'questions':
       case 'problems':
+      case 'klausimų':
+      case 'uždavinių':
         return Math.max(15, quantity * 3); // Approx 3 min per question/problem
       case 'pages':
+      case 'puslapių':
         return Math.max(15, quantity * 4); // Approx 4 min per page
       case 'slides':
+      case 'skaidrių':
         return Math.max(20, quantity * 5); // Approx 5 min per slide
       case 'sections':
+      case 'dalių':
         return Math.max(30, quantity * 10); // Approx 10 min per section
       case 'items':
+      case 'elementų':
       default:
         return Math.max(15, quantity * 2); // Approx 2 min per generic item
     }
@@ -504,17 +551,17 @@ const estimateSubtaskTime = (subtaskText) => {
 export const estimateTaskTime = async (taskDescription) => {
   console.log("Estimating time for:", taskDescription);
   
-  const systemPrompt = `You are a productivity expert specializing in time estimation with a focus on anti-procrastination. 
-  For any given task, estimate how long it would take to complete in minutes.
+  const systemPrompt = `Jūs esate produktyvumo ekspertas, specializuojantis užduočių laiko įvertinime su akcentu į anti-atidėliojimą. 
+  Bet kokiai užduočiai įvertinkite, kiek minučių užtruktų ją užbaigti.
   
-  Important guidelines:
-  1. For homework or study tasks, account for setup time, break time, and review time
-  2. For writing tasks, allow 30 minutes per page of output
-  3. For reading tasks, estimate 5 minutes per page plus note-taking time
-  4. Add a 15-20% buffer to your estimate to account for distractions and procrastination
-  5. Consider the complexity and scope of the task
+  Svarbios gairės:
+  1. Namų darbų ar mokymosi užduotims įskaičiuokite pasiruošimo laiką, pertraukų laiką ir peržiūros laiką
+  2. Rašymo užduotims skirkite 30 minučių vienam puslapiui teksto
+  3. Skaitymo užduotims numatykite 5 minutes vienam puslapiui bei papildomą laiką užrašams
+  4. Pridėkite 15-20% laiko atsargą, atsižvelgiant į galimus trukdžius ir atidėliojimą
+  5. Atsižvelkite į užduoties sudėtingumą ir apimtį
   
-  Provide just a number representing minutes.`;
+  Pateikite tik skaičių, nurodantį minutes.`;
   
   try {
     const response = await fetch('https://text.pollinations.ai/', {
@@ -525,7 +572,7 @@ export const estimateTaskTime = async (taskDescription) => {
       body: JSON.stringify({
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Estimate time in minutes for this task, accounting for breaks, setup, and potential procrastination: "${taskDescription}"` }
+          { role: 'user', content: `Įvertinkite laiką minutėmis šiai užduočiai, atsižvelgiant į pertraukas, pasiruošimą ir galimą atidėliojimą: "${taskDescription}"` }
         ],
         model: 'openai'
       })
@@ -589,19 +636,23 @@ const fallbackTimeEstimation = (taskDescription) => {
   const wordCount = taskDescription.split(/\s+/).length;
   
   // Detect task type for better estimation
-  if (taskLower.includes('homework') || taskLower.includes('assignment')) {
+  if (taskLower.includes('homework') || taskLower.includes('assignment') || 
+      taskLower.includes('namų darb') || taskLower.includes('užduotis')) {
     return 60; // Default 1 hour for homework
-  } else if (taskLower.includes('study') || taskLower.includes('learn')) {
+  } else if (taskLower.includes('study') || taskLower.includes('learn') || 
+             taskLower.includes('mokytis') || taskLower.includes('studijuoti')) {
     return 90; // Default 1.5 hours for studying 
-  } else if (taskLower.includes('write') || taskLower.includes('essay')) {
+  } else if (taskLower.includes('write') || taskLower.includes('essay') || 
+             taskLower.includes('rašyti') || taskLower.includes('rašinys')) {
     return 120; // Default 2 hours for writing tasks
-  } else if (taskLower.includes('read') || taskLower.includes('book')) {
+  } else if (taskLower.includes('read') || taskLower.includes('book') || 
+             taskLower.includes('skaityti') || taskLower.includes('knyg')) {
     return 75; // Default 1.25 hours for reading tasks
   } else {
     // Generic complexity-based calculation with procrastination buffer
-    const complexityFactor = taskLower.includes('research') || 
-                           taskLower.includes('write') || 
-                           taskLower.includes('create') ? 1.5 : 1;
+    const complexityFactor = taskLower.includes('research') || taskLower.includes('tyrinėti') || 
+                           taskLower.includes('write') || taskLower.includes('rašyti') || 
+                           taskLower.includes('create') || taskLower.includes('kurti') ? 1.5 : 1;
     
     // Add 20% buffer for procrastination
     return Math.ceil(Math.max(30, wordCount * 5 * complexityFactor * 1.2));
@@ -614,125 +665,136 @@ export const getDomainTips = (taskDescription, subtask) => {
   const subtaskLower = subtask.toLowerCase();
   
   // Research domain tips
-  if (subtaskLower.includes('research') || subtaskLower.includes('find information') || subtaskLower.includes('gather data')) {
+  if (subtaskLower.includes('research') || subtaskLower.includes('find information') || subtaskLower.includes('gather data') || 
+      subtaskLower.includes('tyrinėti') || subtaskLower.includes('rasti informaciją') || subtaskLower.includes('rinkti duomenis')) {
     return `
-**Set Clear Research Parameters**: Define exactly what you're looking for before starting. Create a list of specific questions to answer or data points to find rather than browsing aimlessly.
+**Nustatykite aiškius tyrimo parametrus**: Prieš pradėdami tiksliai apibrėžkite, ko ieškote. Sukurkite specifinių klausimų ar duomenų, kuriuos reikia rasti, sąrašą, kad išvengtumėte betikslio naršymo.
 
-**Use the Cornell Note-Taking System**: Divide your notes into 3 sections: main notes area (right), cue column (left), and summary area (bottom). This organizes your research findings for better recall and synthesis later.
+**Naudokite Cornell užrašų sistemą**: Padalinkite savo užrašus į 3 dalis: pagrindinių užrašų sritį (dešinėje), užuominų stulpelį (kairėje) ir santraukos sritį (apačioje). Taip sutvarkyti tyrimų rezultatai padės geriau atkurti ir sintezuoti informaciją vėliau.
 
-**Apply the CRAAP Test to Sources**: Evaluate each source using: Currency (how recent?), Relevance (how applicable?), Authority (who created it?), Accuracy (is it reliable?), and Purpose (why was it created?). This ensures you're using high-quality information.
+**Taikykite CRAAP šaltinių testą**: Įvertinkite kiekvieną šaltinį pagal: Aktualumą (kaip nauja?), Tinkamumą (kiek taikytina?), Autoritetą (kas sukūrė?), Tikslumą (ar patikima?) ir Tikslą (kodėl sukurta?). Tai užtikrina, kad naudosite kokybišką informaciją.
 
-**Create a Research Database**: Use a tool like Notion, Excel, or even a simple Google Doc table to track key findings with columns for source, main points, and how it relates to your specific needs. This makes synthesis much easier later.
+**Sukurkite tyrimų duomenų bazę**: Naudokite įrankį kaip Notion, Excel ar paprastą Google Docs lentelę svarbiausių išvadų stebėjimui su stulpeliais šaltiniui, pagrindiniams punktams ir kaip tai susiję su jūsų specifiniais poreikiais. Tai palengvins sintezę vėliau.
 
-**Prevent Rabbit-Hole Research**: Set a timer for 25-30 minutes (Pomodoro technique) and stay focused on your specific research questions. When the timer goes off, take 2 minutes to evaluate if you're still on track or getting lost in tangential information.
+**Išvenkite "triušio urvo" tyrimuose**: Nustatykite 25-30 minučių laikmatį (Pomodoro technika) ir išlikite sutelkti į savo konkrečius tyrimo klausimus. Kai laikmatis baigiasi, skirkite 2 minutes įvertinti, ar esate teisingame kelyje, ar nukrypstate į šalutinę informaciją.
 `;
   }
   
   // Writing domain tips
-  else if (subtaskLower.includes('write') || subtaskLower.includes('draft') || subtaskLower.includes('compose')) {
+  else if (subtaskLower.includes('write') || subtaskLower.includes('draft') || subtaskLower.includes('compose') ||
+           subtaskLower.includes('rašyti') || subtaskLower.includes('kurti tekstą') || subtaskLower.includes('parašyti')) {
     return `
-**Use the "Shitty First Draft" Technique**: Give yourself permission to write poorly at first - just get words on the page without editing. Research shows this reduces perfectionism and increases overall writing quality when you revise later.
+**Naudokite "Prastos pirmosios versijos" techniką**: Leiskite sau iš pradžių rašyti prastai - tiesiog dėkite žodžius ant puslapio neredaguodami. Tyrimai rodo, kad tai sumažina perfekcionizmą ir pagerina bendrą rašymo kokybę, kai vėliau peržiūrite.
 
-**Implement Topic Sentences First**: Before writing full paragraphs, create one clear topic sentence for each section/paragraph. This creates a scaffold for your writing and ensures logical flow.
+**Pirmiausia sukurkite teminius sakinius**: Prieš rašydami pilnas pastraipas, sukurkite po vieną aiškų teminį sakinį kiekvienam skyriui/pastraipai. Tai sukuria jūsų rašinio struktūrą ir užtikrina loginį srautą.
 
-**Apply the Hemingway Method**: Write while standing up (at a counter or standing desk) to create a sense of urgency. Then edit while sitting down to engage a more critical mindset. This physical state change helps separate creation from evaluation.
+**Taikykite Hemingway metodą**: Rašykite stovėdami (prie prekystalio ar stovimo stalo), kad sukurtumėte skubos jausmą. Tada redaguokite sėdėdami, kad įsitrauktumėte į kritiškesnį mąstymą. Šis fizinės būsenos pakeitimas padeda atskirti kūrimą nuo vertinimo.
 
-**Use the Pomodoro Technique**: Set a timer for 25 minutes of focused writing without distractions. When the timer ends, take a 5-minute break. This creates psychological momentum and prevents burnout.
+**Naudokite Pomodoro techniką**: Nustatykite 25 minučių laikmatį sutelktam rašymui be trukdžių. Kai laikmatis baigiasi, padarykite 5 minučių pertrauką. Tai sukuria psichologinį pagreitį ir apsaugo nuo perdegimo.
 
-**Execute a Paragraph-Level Reverse Outline**: After drafting, identify the main point of each paragraph in the margin. This helps you check if your writing is focused and logically structured, and makes it easier to rearrange sections if needed.
+**Atlikite pastraipų lygio atvirkštinį planą**: Po juodraščio parašymo, paraštėje nurodykite pagrindinę kiekvienos pastraipos mintį. Tai padeda patikrinti, ar jūsų rašymas yra koncentruotas ir logiškai struktūruotas, ir palengvina skyrių pertvarkymą, jei reikia.
 `;
   }
   
   // Design/creative domain tips
   else if (subtaskLower.includes('design') || subtaskLower.includes('create') || subtaskLower.includes('develop') || 
-           subtaskLower.includes('prototype') || subtaskLower.includes('mockup')) {
+           subtaskLower.includes('prototype') || subtaskLower.includes('mockup') ||
+           subtaskLower.includes('dizainas') || subtaskLower.includes('kurti') || subtaskLower.includes('vystyti') || 
+           subtaskLower.includes('prototipas') || subtaskLower.includes('maketas')) {
     return `
-**Apply the 20-Minute Sketch Rule**: Start with rapidly generating 3-5 different rough concept sketches (spend max 4-5 minutes on each). This prevents fixation on a single solution and expands your creative options.
+**Taikykite 20 minučių eskizo taisyklę**: Pradėkite greitai generuodami 3-5 skirtingus grubius koncepcijų eskizus (kiekvienam skirkite daugiausiai 4-5 minutes). Tai neleidžia susitelkti ties vienu sprendimu ir išplečia jūsų kūrybines galimybes.
 
-**Use the Design Studio Method**: Divide your design process into: Understand (5 min), Diverge (10 min), Converge (10 min), and Refine (15 min). This structured approach prevents common design pitfalls like premature commitment.
+**Naudokite Dizaino studijos metodą**: Padalinkite savo dizaino procesą į: Supratimą (5 min.), Divergavimą (10 min.), Konvergavimą (10 min.) ir Tobulinimą (15 min.). Šis struktūruotas metodas užkerta kelią įprastoms dizaino klaidoms, pavyzdžiui, per ankstyvam įsipareigojimui.
 
-**Apply Constraint-Based Creativity**: Deliberately impose 2-3 constraints on your design (e.g., "must use only two colors" or "must work without images"). Research shows constraints paradoxically increase creativity by forcing novel solutions.
+**Taikykite apribojimais pagrįstą kūrybiškumą**: Sąmoningai uždėkite 2-3 apribojimus savo dizainui (pvz., "turi naudoti tik dvi spalvas" arba "turi veikti be vaizdų"). Tyrimai rodo, kad apribojimai paradoksaliai padidina kūrybiškumą, priversdami ieškoti naujų sprendimų.
 
-**Set Up Your Creative Environment**: Before starting, gather all tools, clear your workspace, and set up with proper lighting. Research shows physical environment significantly impacts creative performance.
+**Paruoškite savo kūrybinę aplinką**: Prieš pradėdami, surinkite visus įrankius, išvalykite darbo vietą ir nustatykite tinkamą apšvietimą. Tyrimai rodo, kad fizinė aplinka reikšmingai veikia kūrybinį našumą.
 
-**Execute Micro-Feedback Sessions**: After completing a design iteration, take a photo of it and look at it on a different device or from a different angle. This perspective shift helps you notice issues and opportunities you'd otherwise miss.
+**Atlikite mikro grįžtamojo ryšio sesijas**: Užbaigę dizaino iteraciją, nufotografuokite ją ir pažiūrėkite kitame įrenginyje arba iš kito kampo. Šis perspektyvos pakeitimas padeda pastebėti problemas ir galimybes, kurių kitu atveju nepastebėtumėte.
 `;
   }
   
   // Programming domain tips
   else if (subtaskLower.includes('code') || subtaskLower.includes('program') || subtaskLower.includes('develop') || 
-           subtaskLower.includes('debug') || subtaskLower.includes('fix bug')) {
+           subtaskLower.includes('debug') || subtaskLower.includes('fix bug') ||
+           subtaskLower.includes('kodas') || subtaskLower.includes('programuoti') || subtaskLower.includes('vystyti') || 
+           subtaskLower.includes('derinti') || subtaskLower.includes('taisyti klaidą')) {
     return `
-**Apply Rubber Duck Debugging**: Keep a small object (traditionally a rubber duck) on your desk and explain your code to it line-by-line when stuck. This forces you to articulate your logic and often reveals the issue without outside help.
+**Taikykite "Guminės anties" derinimą**: Laikykite mažą objektą (tradiciškai guminę antį) ant savo stalo ir paaiškinkite jai savo kodą eilutė po eilutės, kai užstringate. Tai priverčia jus aiškiai išdėstyti savo logiką ir dažnai atskleidžia problemą be išorinės pagalbos.
 
-**Use the 3-Step Test-Driven Approach**: 1) Write a failing test that defines what you want the code to do, 2) Write the minimum code to make the test pass, 3) Refactor the code while keeping the test passing. This methodology creates cleaner, more reliable code.
+**Naudokite 3 žingsnių testavimu pagrįstą metodą**: 1) Parašykite neveikiantį testą, kuris apibrėžia, ką norite, kad kodas darytų, 2) Parašykite minimalų kodą, kad testas praeitų, 3) Refaktorinkite kodą, išlaikydami testą praeinantį. Ši metodika sukuria švaresnį, patikimesnį kodą.
 
-**Implement Timeboxing for Difficult Problems**: Set a 30-minute timer when tackling a challenging issue. If not resolved when the timer ends, take a different approach or seek help. Research shows effectiveness drops significantly after 30 minutes of being stuck.
+**Įgyvendinkite laiko ribojimą sudėtingoms problemoms**: Nustatykite 30 minučių laikmatį, kai sprendžiate sudėtingą problemą. Jei problema neišspręsta, kai laikmatis baigiasi, naudokite kitą metodą arba ieškokite pagalbos. Tyrimai rodo, kad efektyvumas ženkliai sumažėja po 30 minučių strigimo.
 
-**Create a Trace Table**: For complex logical operations, create a table tracking the value of each variable as it changes throughout execution. This visual approach makes logical errors much easier to spot.
+**Sukurkite sekimo lentelę**: Sudėtingoms loginėms operacijoms sukurkite lentelę, sekančią kiekvieno kintamojo reikšmę, kai ji keičiasi vykdymo metu. Šis vizualus metodas padaro logines klaidas daug lengviau pastebimas.
 
-**Apply the 80/20 Rule to Code Quality**: Focus 80% of your optimization efforts on the 20% of code that runs most frequently. Use profiling tools to identify these critical paths rather than optimizing blindly.
+**Taikykite 80/20 taisyklę kodo kokybei**: Sutelkite 80% savo optimizavimo pastangų į 20% kodo, kuris vykdomas dažniausiai. Naudokite profiliavimo įrankius šioms kritinėms vietoms identifikuoti, o ne optimizuokite aklai.
 `;
   }
   
   // Study/learning domain tips
   else if (subtaskLower.includes('study') || subtaskLower.includes('learn') || subtaskLower.includes('understand') ||
-           subtaskLower.includes('review') || taskLower.includes('homework')) {
+           subtaskLower.includes('review') || taskLower.includes('homework') ||
+           subtaskLower.includes('mokytis') || subtaskLower.includes('studijuoti') || subtaskLower.includes('suprasti') ||
+           subtaskLower.includes('peržiūrėti') || taskLower.includes('namų darbai')) {
     return `
-**Apply Spaced Repetition**: Rather than cramming all at once, break your study session into short periods with increasing intervals between reviews. Research shows this improves retention by up to 200% compared to traditional studying.
+**Taikykite intervalų kartojimą**: Užuot viską mokydamiesi iš karto, padalinkite mokymosi sesiją į trumpus periodus su didėjančiais intervalais tarp peržiūrų. Tyrimai rodo, kad tai pagerina įsiminimą iki 200% lyginant su tradiciniu mokymusi.
 
-**Use the Feynman Technique**: Explain the concept you're learning in simple language as if teaching it to someone unfamiliar with the subject. This identifies gaps in your understanding and strengthens neural connections.
+**Naudokite Feynman techniką**: Paaiškinkite koncepciją, kurią mokotės, paprastais žodžiais, tarsi mokytumėte ją kažkam, nepažįstančiam temos. Tai identifikuoja spragas jūsų supratime ir sustiprina neuroninius ryšius.
 
-**Create a Distraction-Free Environment**: Turn off notifications, use apps like Freedom to block distracting websites, and put your phone in another room. Research shows attention takes 23 minutes to recover after each interruption.
+**Sukurkite aplinką be trukdžių**: Išjunkite pranešimus, naudokite programas kaip Freedom blokuoti atitraukiančias svetaines ir padėkite telefoną kitame kambaryje. Tyrimai rodo, kad dėmesys atsistato per 23 minutes po kiekvieno pertraukimo.
 
-**Implement Active Recall**: Instead of passively re-reading materials, actively quiz yourself on the content. Create flashcards or practice questions that force you to retrieve information from memory, which strengthens learning pathways.
+**Įgyvendinkite aktyvų atgaminimą**: Užuot pasyviai perskaitę medžiagą, aktyviai testuokite save dėl turinio. Sukurkite atminties korteles ar praktikos klausimus, kurie priverčia jus ištraukti informaciją iš atminties, tai sustiprina mokymosi kelius.
 
-**Use the "Memory Palace" Method**: For information that must be memorized, associate key concepts with specific locations in a familiar place (like your home). This spatial memory technique has been proven effective since ancient times.
+**Naudokite "Atminties rūmų" metodą**: Informacijai, kurią reikia įsiminti, asocijuokite pagrindinius konceptus su specifinėmis vietomis pažįstamoje aplinkoje (kaip jūsų namai). Ši erdvinės atminties technika pasirodė efektyvi nuo senovės laikų.
 `;
   }
   
   // Presentation domain tips
-  else if (subtaskLower.includes('present') || subtaskLower.includes('presentation') || subtaskLower.includes('speech')) {
+  else if (subtaskLower.includes('present') || subtaskLower.includes('presentation') || subtaskLower.includes('speech') ||
+           subtaskLower.includes('pristatyti') || subtaskLower.includes('pristatymas') || subtaskLower.includes('kalba')) {
     return `
-**Apply the 10/20/30 Rule**: Limit your presentation to 10 slides, 20 minutes, and 30-point minimum font size. This forces clarity and prevents information overload for your audience.
+**Taikykite 10/20/30 taisyklę**: Ribokite savo pristatymą iki 10 skaidrių, 20 minučių ir 30 taškų minimalaus šrifto dydžio. Tai priverčia aiškiai išdėstyti mintis ir apsaugo nuo informacijos perkrovos auditorijai.
 
-**Use the "Message House" Structure**: Create one overarching message (the roof) supported by 3 key points (the pillars), each with 2-3 pieces of evidence (the foundation). This architecture ensures your presentation has a coherent structure.
+**Naudokite "Žinios namo" struktūrą**: Sukurkite vieną visaapimančią žinutę (stogas) paremtą 3 pagrindiniais punktais (stulpai), kiekvienas su 2-3 įrodymų elementais (pamatas). Ši architektūra užtikrina, kad jūsų pristatymas turės darnią struktūrą.
 
-**Implement the 5-Second Rule for Slides**: Design each slide so its main point can be understood within 5 seconds. This ensures your audience isn't reading slides instead of listening to you.
+**Įgyvendinkite 5 sekundžių skaidrių taisyklę**: Kurkite kiekvieną skaidrę taip, kad jos pagrindinis punktas būtų suprantamas per 5 sekundes. Tai užtikrina, kad jūsų auditorija neskaitys skaidrių vietoj to, kad klausytųsi jūsų.
 
-**Apply the 3-Part Practice Method**: 1) Practice while reading your notes, 2) Practice with minimal notes, looking at key points only when needed, 3) Practice without notes in front of a mirror or camera. This progressive approach builds confidence effectively.
+**Taikykite 3 dalių praktikos metodą**: 1) Praktikuokitės skaitydami savo užrašus, 2) Praktikuokitės su minimaliais užrašais, žiūrėdami į pagrindinius punktus tik kai reikia, 3) Praktikuokitės be užrašų prieš veidrodį ar kamerą. Šis progresyvus metodas efektyviai ugdo pasitikėjimą.
 
-**Execute a Pre-Presentation Ritual**: 5 minutes before presenting, find a private space to: 1) Stand in a power pose for 2 minutes (research shows this decreases stress hormones), 2) Take 10 deep breaths, 3) Repeat a personal affirmation. This routine reduces anxiety and improves delivery.
+**Atlikite ritualą prieš pristatymą**: 5 minutes prieš pristatymą, raskite privačią erdvę: 1) Stovėkite galios pozoje 2 minutes (tyrimai rodo, kad tai sumažina streso hormonus), 2) Giliai įkvėpkite 10 kartų, 3) Pakartokite asmeninį patvirtinimą. Šis ritualas sumažina nerimą ir pagerina pristatymą.
 `;
   }
   
   // Planning/organization domain tips
-  else if (subtaskLower.includes('plan') || subtaskLower.includes('organize') || subtaskLower.includes('schedule')) {
+  else if (subtaskLower.includes('plan') || subtaskLower.includes('organize') || subtaskLower.includes('schedule') ||
+           subtaskLower.includes('planuoti') || subtaskLower.includes('organizuoti') || subtaskLower.includes('tvarkaraštis')) {
     return `
-**Apply the Time-Block Planning Method**: Divide your available time into distinct blocks dedicated to specific tasks. Research shows this reduces context-switching costs and increases productivity by up to 25%.
+**Taikykite laiko blokų planavimo metodą**: Padalinkite savo turimą laiką į skirtingus blokus, skirtus konkrečioms užduotims. Tyrimai rodo, kad tai sumažina konteksto perjungimo sąnaudas ir padidina produktyvumą iki 25%.
 
-**Use the SMART++ Framework**: For each planned action, ensure it's: Specific, Measurable, Achievable, Relevant, Time-bound, plus Energy-efficient (aligned with your energy levels) and Exciting (personally motivating). This expansion of SMART goals improves follow-through.
+**Naudokite SMART++ sistemą**: Kiekvienam suplanuotam veiksmui užtikrinkite, kad jis būtų: Specifinis, Matuojamas, Pasiekiamas, Aktualus, Terminuotas, plius Energijai efektyvus (suderintas su jūsų energijos lygiais) ir Įdomus (asmeniškai motyvuojantis). Šis SMART tikslų išplėtimas pagerina įvykdymą.
 
-**Implement the 3-2-1 Planning Structure**: Identify 3 mission-critical tasks, 2 maintenance tasks, and 1 development task (for personal/professional growth). This creates a balanced plan that moves you forward while keeping current responsibilities on track.
+**Įgyvendinkite 3-2-1 planavimo struktūrą**: Identifikuokite 3 kritines misijos užduotis, 2 priežiūros užduotis ir 1 vystymo užduotį (asmeniniam/profesiniam augimui). Tai sukuria subalansuotą planą, kuris jus stumia į priekį, tuo pačiu išlaikydamas dabartines atsakomybes.
 
-**Create Planning Tripwires**: Define specific conditions that will trigger a plan review (e.g., "If I'm 20% behind schedule by Wednesday"). This anticipates problems before they become critical and builds adaptability into your planning.
+**Sukurkite planavimo užkardas**: Apibrėžkite specifines sąlygas, kurios iššauks plano peržiūrą (pvz., "Jei atsiliekate 20% nuo grafiko iki trečiadienio"). Tai numato problemas prieš joms tampant kritinėmis ir įtraukia prisitaikymą į jūsų planavimą.
 
-**Execute the 10-Minute End-of-Day Review**: At day's end, spend 10 minutes evaluating what was accomplished, what wasn't, and creating a rough plan for tomorrow. Research shows this improves next-day productivity by providing closure and reducing cognitive load.
+**Atlikite 10 minučių dienos pabaigos peržiūrą**: Dienos pabaigoje skirkite 10 minučių įvertinti, kas buvo pasiekta, kas ne, ir kurti apytikslį planą rytojui. Tyrimai rodo, kad tai pagerina kitos dienos produktyvumą, suteikdamas užbaigimą ir sumažindamas kognityvinę naštą.
 `;
   }
   
   // Meetings/communication domain tips
-  else if (subtaskLower.includes('meet') || subtaskLower.includes('interview') || subtaskLower.includes('communicate')) {
+  else if (subtaskLower.includes('meet') || subtaskLower.includes('interview') || subtaskLower.includes('communicate') ||
+           subtaskLower.includes('susitikimas') || subtaskLower.includes('pokalbis') || subtaskLower.includes('komunikuoti')) {
     return `
-**Apply the 3W1H Meeting Framework**: Start by clearly defining Why this meeting matters, What specific outcomes are expected, Who needs to be involved, and How long it should take. This structure prevents meeting scope creep.
+**Taikykite 3K1K susitikimo sistemą**: Pradėkite aiškiai apibrėždami Kodėl šis susitikimas yra svarbus, Ką tikitės pasiekti, Kas turi dalyvauti, ir Kiek laiko tai turėtų užtrukti. Ši struktūra neleidžia susitikimo apimčiai išsiplėsti.
 
-**Use the 2-Minute Rule for Speaking**: When making a point, aim to express it within 2 minutes. Research shows attention drops significantly after this timeframe. This creates more dynamic, engaging discussions.
+**Naudokite 2 minučių taisyklę kalbėjimui**: Kai reiškiate mintį, stenkitės ją išreikšti per 2 minutes. Tyrimai rodo, kad dėmesys reikšmingai sumažėja po šio laiko. Tai sukuria dinamiškesnes, įtraukiančias diskusijas.
 
-**Implement a Meeting Role Rotation**: Assign three key roles (facilitator, timekeeper, note-taker) and rotate them regularly. This increases engagement and prevents the meeting from being dominated by a single voice.
+**Įgyvendinkite susitikimo vaidmenų rotaciją**: Paskirkite tris pagrindinius vaidmenis (moderatorius, laiko prižiūrėtojas, užrašų rašytojas) ir reguliariai juos keiskite. Tai padidina įsitraukimą ir neleidžia susitikimui būti dominuojamam vieno balso.
 
-**Create a Decision-Documentation System**: Use a simple template that records: the decision made, alternatives considered, who's responsible for implementation, and follow-up timeline. This prevents decision amnesia and improves accountability.
+**Sukurkite sprendimų dokumentavimo sistemą**: Naudokite paprastą šabloną, kuris fiksuoja: priimtą sprendimą, svarstytas alternatyvas, kas atsakingas už įgyvendinimą ir tolesnius terminus. Tai apsaugo nuo sprendimų amnezijos ir pagerina atskaitomybę.
 
-**Execute the "Plus/Delta" Ending**: In the final 3 minutes, ask participants to share one thing that went well (plus) and one thing to improve (delta) about the meeting itself. This creates continuous improvement in your meeting processes.
+**Atlikite "Pliusas/Delta" užbaigimą**: Paskutinėse 3 minutėse paprašykite dalyvių pasidalinti vienu dalyku, kuris vyko gerai (pliusas), ir vienu dalyku, kurį reikia tobulinti (delta) apie patį susitikimą. Tai sukuria nuolatinį tobulėjimą jūsų susitikimų procesuose.
 `;
   }
   
@@ -751,7 +813,7 @@ export const generateTips = async (prompt, signal) => {
       messages: [
         { 
           role: 'system', 
-          content: "You are a world-class productivity coach providing specific, actionable execution tips."
+          content: "Jūs esate pasaulinio lygio produktyvumo treneris, teikiantis konkrečius, tikslius vykdymo patarimus lietuvių kalba."
         },
         { role: 'user', content: prompt }
       ],
