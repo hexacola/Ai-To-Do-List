@@ -2,7 +2,7 @@
   "name": "pulp-productive",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://yourusername.github.io/ai-productivity-tool",
+  "homepage": "https://hexacola.github.io/Ai-To-Do-List",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
