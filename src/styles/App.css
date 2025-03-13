@@ -1,0 +1,93 @@
+.app {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background-image: linear-gradient(to bottom, rgba(18, 18, 18, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%),
+    url('https://www.transparenttextures.com/patterns/cartographer.png');
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Film reel effect at top */
+.app::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 15px,
+    var(--primary-yellow) 15px,
+    var(--primary-yellow) 30px
+  );
+  z-index: 10;
+}
+
+/* Film reel effect at bottom */
+.app::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 15px,
+    var(--primary-yellow) 15px,
+    var(--primary-yellow) 30px
+  );
+  z-index: 10;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(247, 208, 44, 0.15);
+  position: relative;
+}
+
+/* Iconic yellow border inspired by Kill Bill */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid var(--primary-yellow);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.content-container {
+  padding: 1rem 0;
+}
+
+/* Vintage film grain overlay */
+.app::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1Ii8+PC9zdmc+');
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 0 1rem;
+  }
+} 
