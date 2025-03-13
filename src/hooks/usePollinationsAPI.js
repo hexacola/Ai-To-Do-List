@@ -738,4 +738,47 @@ export const getDomainTips = (taskDescription, subtask) => {
   
   // Default generic tips if no specialized domain is detected
   return null;
+};
+
+// Function to generate tips using the Pollinations API
+export const generateTips = async (prompt, signal) => {
+  if (!prompt) {
+    throw new Error('Prompt is required');
+  }
+
+  try {
+    const requestBody = {
+      messages: [
+        { 
+          role: 'system', 
+          content: "You are a world-class productivity coach providing specific, actionable execution tips."
+        },
+        { role: 'user', content: prompt }
+      ],
+      model: 'openai'
+    };
+
+    const response = await fetch('https://text.pollinations.ai/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+      signal
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Error (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.text();
+    return data;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error;
+    }
+    console.error('Error generating tips:', error);
+    throw new Error(`Failed to generate tips: ${error.message}`);
+  }
 }; 
