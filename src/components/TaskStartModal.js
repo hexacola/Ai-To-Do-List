@@ -391,13 +391,13 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
         <TipCard>
           <TipContent>
             <div style={{ marginBottom: '0.75rem' }}>
-              Couldn't load tips: {error}
+              Klaida įkelti patarimus: {error}
             </div>
             {onRefresh && (
               <div style={{ marginTop: '0.75rem' }}>
                 <RefreshButton onClick={onRefresh}>
                   <FontAwesomeIcon icon={faSync} />
-                  TRY AGAIN
+                  PABANDYKITE KITAI
                 </RefreshButton>
               </div>
             )}
@@ -411,7 +411,7 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
     return (
       <TipsList>
         <TipCard>
-          <TipContent>Complete this step efficiently by breaking it into smaller actions. Focus on one thing at a time.</TipContent>
+          <TipContent>Susitelkite į šį užduoties žingsnį, suskaidydami jį į įveikiamas dalis.</TipContent>
         </TipCard>
       </TipsList>
     );
@@ -441,7 +441,7 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
         if (!tips.trim()) {
           return [(
             <TipCard key="empty">
-              <TipContent>No specific tips available. Try refreshing to generate new tips.</TipContent>
+              <TipContent>Nėra konkrečių patarimų. Pabandykite atnaujinti.</TipContent>
             </TipCard>
           )];
         }
@@ -551,7 +551,7 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
         
         return tipItems.length > 0 ? tipItems : [(
           <TipCard key="fallback">
-            <TipContent>Focus on this task step with concentration, breaking it down into manageable chunks.</TipContent>
+            <TipContent>Susitelkite į šį užduoties žingsnį, suskaidydami jį į įveikiamas dalis.</TipContent>
           </TipCard>
         )];
       }
@@ -568,7 +568,7 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
           console.warn('Error stringifying tips object:', jsonError);
           return (
             <TipCard key="error">
-              <TipContent>Tips available but cannot be displayed. Try refreshing.</TipContent>
+              <TipContent>Patarimai yra, bet jų negalima rodyti. Pabandykite atnaujinti.</TipContent>
             </TipCard>
           );
         }
@@ -577,14 +577,14 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
       // Default fallback
       return (
         <TipCard key="unknown">
-          <TipContent>No tips available in a recognizable format. Try refreshing.</TipContent>
+          <TipContent>Nėra atpažįstamo formato patarimų. Pabandykite atnaujinti.</TipContent>
         </TipCard>
       );
     } catch (error) {
       console.error('Error processing tips:', error);
       return (
         <TipCard key="error">
-          <TipContent>Error processing tips. Please try refreshing to get new execution tips.</TipContent>
+          <TipContent>Klaida apdorojant patarimus. Pabandykite atnaujinti, kad gautumėte naujus vykdymo patarimus.</TipContent>
         </TipCard>
       );
     }
@@ -595,9 +595,9 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
         <div style={{ fontSize: '0.8rem', color: 'var(--primary-yellow)', opacity: 0.8 }}>
           <FontAwesomeIcon icon={faInfoCircle} size="sm" /> 
-          <span style={{ marginLeft: '0.25rem' }}>Source:</span> 
+          <span style={{ marginLeft: '0.25rem' }}>Šaltinis:</span> 
           <SourceBadge $domain={isFromDomainCache}>
-            {isFromDomainCache ? 'DOMAIN EXPERT' : 'AI COACH'}
+            {isFromDomainCache ? 'SRITIES EKSPERTAS' : 'DI TRENERIS'}
           </SourceBadge>
         </div>
       </div>
@@ -605,7 +605,7 @@ const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
       {onRefresh && (
         <RefreshButton onClick={onRefresh}>
           <FontAwesomeIcon icon={faSync} />
-          REFRESH TIPS
+          ATNAUJINTI PATARIMUS
         </RefreshButton>
       )}
     </>
@@ -678,8 +678,8 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
         
         // Create a unique prompt that forces a new API request
         setTipPrompt(
-          `I'm working on this task: "${taskText}" and specifically on this step: "${subtaskText}". ` +
-          `Please give me 4-6 specific, actionable tips to complete this step efficiently with research-backed methods and best practices. Include domain-specific advice, exact execution tactics, potential obstacles, and how I'll know when I've successfully completed this step. (uid:${uniqueId})`
+          `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${subtaskText}". ` +
+          `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (uid:${uniqueId})`
         );
       }
     } catch (error) {
@@ -848,8 +848,8 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
               const taskText = task.text || 'current task';
               
               // Completely unique prompt with multiple markers to prevent API caching
-              const newPrompt = `I'm working on this task: "${taskText}" and specifically on this step: "${nextSubtaskText}". ` +
-                `Please give me 4-6 specific, actionable tips to complete this step efficiently with research-backed methods and best practices. Include domain-specific advice, exact execution tactics, potential obstacles, and how I'll know when I've successfully completed this step. (Unique:${uniqueTimestamp}-${nextSubtaskIndex}-${randomStr})`;
+              const newPrompt = `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${nextSubtaskText}". ` +
+                `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (Unique:${uniqueTimestamp}-${nextSubtaskIndex}-${randomStr})`;
               
               // Set the new prompt which will trigger the API request
               setTipPrompt(newPrompt);
@@ -929,8 +929,8 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
       const taskText = task?.text || 'current task';
       
       setTipPrompt(
-        `I'm working on this task: "${taskText}" and specifically on this step: "${subtaskText}". ` +
-        `Please give me 4-6 fresh, specific, actionable tips to complete this step efficiently. Include domain-specific advice, exact execution tactics, potential obstacles, and how I'll know when I've successfully completed this step. (refresh: ${timestamp})`
+        `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${subtaskText}". ` +
+        `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (refresh: ${timestamp})`
       );
     }
   };
@@ -1071,13 +1071,13 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
                   onClick={toggleTimer}
                 >
                   <FontAwesomeIcon icon={isTimerRunning ? faPause : faPlay} />
-                  {isTimerRunning ? 'PAUSE' : 'START'}
+                  {isTimerRunning ? 'PAUZĖ' : 'PRADĖTI'}
                 </TimerButton>
                 <TimerButton 
                   onClick={completeCurrentSubtask}
                 >
                   <FontAwesomeIcon icon={faCheck} />
-                  COMPLETE STEP
+                  UŽBAIGTI ŽINGSNĮ
                 </TimerButton>
               </TimerControls>
               
@@ -1090,7 +1090,7 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
               <SubtasksSection>
                 <h3>
                   <FontAwesomeIcon icon={faListUl} />
-                  TASK BREAKDOWN
+                  UŽDUOTIES IŠSKAIDYMAS
                 </h3>
                 <SubtaskList>
                   {task.subtasks && task.subtasks.map((subtask, index) => {
@@ -1113,7 +1113,7 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
                             </div>
                           )}
                         </div>
-                        {isActive && <CurrentSubtaskHighlight>CURRENT</CurrentSubtaskHighlight>}
+                        {isActive && <CurrentSubtaskHighlight>DABARTINIS</CurrentSubtaskHighlight>}
                       </SubtaskItem>
                     );
                   })}
@@ -1123,7 +1123,7 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
               <TipsSection>
                 <h3>
                   <FontAwesomeIcon icon={faLightbulb} />
-                  EXECUTION TIPS
+                  VYKDYMO PATARIMAI
                 </h3>
                 <Tips 
                   key={`tips-${task?.id}-${currentSubtaskIndex}`}

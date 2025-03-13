@@ -474,7 +474,7 @@ const TaskForm = ({ addTask }) => {
         <InputContainer>
           <input
             type="text"
-            placeholder="What needs to be done? Then press Tab or click AI button"
+            placeholder="Ką reikia padaryti? Paspauskite Tab arba AI mygtuką"
             value={taskInput}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -484,10 +484,10 @@ const TaskForm = ({ addTask }) => {
               type="button" 
               className="magic-button"
               onClick={generateSubtasksAndTime}
-              title="Generate AI task breakdown"
+              title="Generuoti DI užduoties išskaidymą"
             >
               <FontAwesomeIcon icon={faMagic} pulse={!aiTriggered} />
-              <span className="icon-text">AI BREAKDOWN</span>
+              <span className="icon-text">DI IŠSKAIDYMAS</span>
             </button>
           )}
         </InputContainer>
@@ -495,7 +495,7 @@ const TaskForm = ({ addTask }) => {
         {!aiTriggered && taskInput.trim() !== '' && !isLoading && (
           <EnhancedHintText>
             <FontAwesomeIcon icon={faMagic} />
-            <span>Let our AI break this down into SMALL, specific steps that will help you STOP procrastinating!</span>
+            <span>Leiskite mūsų dirbtiniam intelektui išskaidyti užduotį į MAŽUS, konkrečius žingsnius, kurie padės jums NUSTOTI atidėlioti!</span>
           </EnhancedHintText>
         )}
         
@@ -509,7 +509,7 @@ const TaskForm = ({ addTask }) => {
             >
               <LoadingContainer>
                 <LoadingSpinner icon={faSpinner} size="2x" />
-                <p>Creating a procrastination-busting plan with specific steps you can start RIGHT NOW...</p>
+                <p>Kuriamas atidėliojimą įveikiantis planas su konkrečiais žingsniais, kuriuos galite pradėti DABAR PAT...</p>
               </LoadingContainer>
             </motion.div>
           )}
@@ -524,7 +524,7 @@ const TaskForm = ({ addTask }) => {
               <ErrorMessage>
                 <FontAwesomeIcon icon={faExclamationTriangle} />
                 <span>{error}</span>
-                <button type="button" onClick={retryGeneration} title="Try again">
+                <button type="button" onClick={retryGeneration} title="Bandyti dar kartą">
                   <FontAwesomeIcon icon={faSync} />
                 </button>
               </ErrorMessage>
@@ -541,10 +541,10 @@ const TaskForm = ({ addTask }) => {
               style={{ position: 'relative' }}
             >
               <SubtaskHeader>
-                <h4>ANTI-PROCRASTINATION STEPS</h4>
-                <button type="button" className="regenerate" onClick={retryGeneration} title="Generate new breakdown">
+                <h4>ANTI-ATIDĖLIOJIMO ŽINGSNIAI</h4>
+                <button type="button" className="regenerate" onClick={retryGeneration} title="Generuoti naują išskaidymą">
                   <FontAwesomeIcon icon={faSync} />
-                  <span>Regenerate</span>
+                  <span>Pergeneruoti</span>
                 </button>
               </SubtaskHeader>
               <SubtaskList>
@@ -577,7 +577,7 @@ const TaskForm = ({ addTask }) => {
                 >
                   <TimeEstimate>
                     <FontAwesomeIcon icon={faClock} />
-                    <span>Total estimated time: <strong>{calculateTotalTime(subtasks)} minutes</strong></span>
+                    <span>Bendras numatomas laikas: <strong>{calculateTotalTime(subtasks)} minučių</strong></span>
                   </TimeEstimate>
                 </motion.div>
               )}
@@ -594,7 +594,7 @@ const TaskForm = ({ addTask }) => {
             >
               <TimeEstimate>
                 <FontAwesomeIcon icon={faClock} />
-                <span>Estimated time: <strong>{estimatedTime} minutes</strong></span>
+                <span>Numatomas laikas: <strong>{estimatedTime} minučių</strong></span>
               </TimeEstimate>
             </motion.div>
           )}
@@ -607,7 +607,7 @@ const TaskForm = ({ addTask }) => {
           whileTap="tap"
           disabled={taskInput.trim() === ''}
         >
-          <FontAwesomeIcon icon={faPlus} /> ADD TASK
+          <FontAwesomeIcon icon={faPlus} /> PRIDĖTI UŽDUOTĮ
         </AddButton>
       </Form>
     </FormContainer>

@@ -396,8 +396,8 @@ const TaskList = ({ tasks, deleteTask, toggleComplete, toggleSubtask }) => {
     <TaskListContainer>
       {tasks.length === 0 ? (
         <EmptyState>
-          <h3>NO TASKS YET, PARTNER</h3>
-          <p>Start adding tasks above to get your productivity journey going with some Tarantino flair!</p>
+          <h3>DAR NĖRA UŽDUOČIŲ</h3>
+          <p>Pradėkite pridėti užduotis aukščiau, kad padidintumėte savo produktyvumą!</p>
         </EmptyState>
       ) : (
         <AnimatePresence>
@@ -414,7 +414,7 @@ const TaskList = ({ tasks, deleteTask, toggleComplete, toggleSubtask }) => {
               <TaskHeader>
                 <h3>{task.text}</h3>
                 <ButtonGroup>
-                  <StartButton onClick={() => handleStartTask(task.id)} title="Start working on this task">
+                  <StartButton onClick={() => handleStartTask(task.id)} title="Pradėti dirbti su šia užduotimi">
                     <FontAwesomeIcon icon={faPlay} />
                   </StartButton>
                   <IconButton onClick={() => toggleComplete(task.id)}>
@@ -429,7 +429,7 @@ const TaskList = ({ tasks, deleteTask, toggleComplete, toggleSubtask }) => {
               <TaskDetails>
                 <TimeInfo>
                   <FontAwesomeIcon icon={faClock} />
-                  <span>Estimated: {formatTime(task.estimatedMinutes)}</span>
+                  <span>Numatyta: {formatTime(task.estimatedMinutes)}</span>
                 </TimeInfo>
                 
                 <div className="subtask-count">
@@ -450,7 +450,7 @@ const TaskList = ({ tasks, deleteTask, toggleComplete, toggleSubtask }) => {
                 $expanded={expandedTasks[task.id]} 
                 onClick={() => toggleTaskExpand(task.id)}
               >
-                {expandedTasks[task.id] ? 'Hide Subtasks' : 'Show Subtasks'} 
+                {expandedTasks[task.id] ? 'Slėpti žingsnius' : 'Rodyti žingsnius'} 
                 <FontAwesomeIcon icon={expandedTasks[task.id] ? faChevronUp : faChevronDown} />
               </ExpandButton>
               
@@ -499,7 +499,7 @@ const TaskList = ({ tasks, deleteTask, toggleComplete, toggleSubtask }) => {
                     ) : (
                       <NoSubtasksMessage>
                         <FontAwesomeIcon icon={faExclamationCircle} />
-                        <span>No subtasks available</span>
+                        <span>Nėra žingsnių</span>
                       </NoSubtasksMessage>
                     )}
                   </SubtaskContainer>
