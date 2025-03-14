@@ -14,8 +14,11 @@ import {
   faClock,
   faCheckCircle,
   faTrash,
-  faEraser
+  faEraser,
+  faCode
 } from '@fortawesome/free-solid-svg-icons';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { generateTips } from '../utils/aiHelper';
 
 // Konstanta pokalbių istorijos išsaugojimui localStorage
@@ -154,7 +157,13 @@ const Message = styled(motion.div).withConfig({
       background-color: ${props => props.$isUser ? 'rgba(178, 34, 34, 0.05)' : 'rgba(247, 208, 44, 0.05)'};
       padding: var(--spacing-md);
       border-left: 3px solid ${props => props.$isUser ? 'var(--primary-red)' : 'var(--primary-yellow)'};
-      white-space: pre-line;
+      
+      p {
+        margin-bottom: 1rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
     }
     
     .message-meta {
@@ -293,53 +302,140 @@ const messageVariants = {
   exit: { opacity: 0, transition: { duration: 0.2 } }
 };
 
-// Clean the AI response to remove special characters like # and formatting
+// Add a styled component for code blocks
+const CodeBlock = styled.div`
+  margin: 10px 0;
+  position: relative;
+  font-family: 'Consolas', 'Monaco', monospace;
+  
+  .code-header {
+    background-color: var(--primary-yellow);
+    color: var(--text-color);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    
+    .language-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      svg {
+        color: var(--primary-red);
+      }
+    }
+  }
+  
+  .code-content {
+    font-size: 0.9rem;
+    border: 2px solid var(--primary-yellow);
+    
+    &::-webkit-scrollbar {
+      height: 8px;
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--primary-yellow);
+    }
+  }
+`;
+
+// Update the cleanResponse function to return a structured data format that includes code blocks
 const cleanResponse = (text) => {
-  // Remove markdown headers (# Header)
-  text = text.replace(/^#+ (.+)$/gm, '$1');
+  let blocks = [];
+  let currentBlock = { type: 'text', content: '' };
+  let isInCodeBlock = false;
+  let language = '';
+  const lines = text.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    
+    // Check for code block start/end
+    if (line.startsWith('```')) {
+      if (!isInCodeBlock) {
+        // Starting a code block - push the current text block
+        if (currentBlock.content.trim()) {
+          blocks.push({...currentBlock});
+        }
+        
+        // Create new code block
+        isInCodeBlock = true;
+        language = line.slice(3).trim();
+        currentBlock = { type: 'code', language: language || 'text', content: '' };
+      } else {
+        // Ending a code block - push it and start a new text block
+        if (currentBlock.content.trim()) {
+          blocks.push({...currentBlock});
+        }
+        isInCodeBlock = false;
+        currentBlock = { type: 'text', content: '' };
+      }
+      continue;
+    }
+
+    // Add the line to the current block
+    if (currentBlock.content && (currentBlock.type === 'text' || currentBlock.content.endsWith('\n'))) {
+      currentBlock.content += line;
+    } else {
+      currentBlock.content += line;
+    }
+    
+    // Add newline (except for the last line)
+    if (i < lines.length - 1) {
+      currentBlock.content += '\n';
+    }
+  }
   
-  // Remove markdown list markers (* item or - item)
-  text = text.replace(/^[\*\-] (.+)$/gm, '• $1');
+  // Add the last block if it has content
+  if (currentBlock.content.trim()) {
+    blocks.push(currentBlock);
+  }
   
-  // Remove code blocks and inline code
-  text = text.replace(/```[a-z]*\n([\s\S]*?)\n```/g, '$1');
-  text = text.replace(/`([^`]+)`/g, '$1');
+  // Process text blocks to clean up Markdown and formatting
+  blocks = blocks.map(block => {
+    if (block.type === 'text') {
+      let processedText = block.content;
+      
+      // Clean up Markdown and formatting in text blocks
+      processedText = processedText.replace(/^#+\s+/gm, ''); // Headers
+      processedText = processedText.replace(/^[\*\-]\s+/gm, '• '); // Bullet points
+      processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '$1'); // Bold
+      processedText = processedText.replace(/\*([^*]+)\*/g, '$1'); // Italic
+      processedText = processedText.replace(/__([^_]+)__/g, '$1'); // Bold underscore
+      processedText = processedText.replace(/_([^_]+)_/g, '$1'); // Italic underscore
+      processedText = processedText.replace(/`([^`]+)`/g, '$1'); // Inline code
+      processedText = processedText.replace(/^>\s+/gm, ''); // Blockquotes
+      processedText = processedText.replace(/^[-*_]{3,}$/gm, ''); // Horizontal rules
+      processedText = processedText.replace(/([.!?])(?! |\n)/g, '$1 '); // Spacing after punctuation
+      processedText = processedText.replace(/,(?! )/g, ', '); // Spacing after commas
+      processedText = processedText.replace(/\n{3,}/g, '\n\n'); // Excessive newlines
+      processedText = processedText.replace(/ +/g, ' '); // Multiple spaces
+      processedText = processedText.replace(/[~^]/g, ''); // Special characters
+      
+      return { ...block, content: processedText.trim() };
+    }
+    return block;
+  });
   
-  // Remove bold and italic formatting
-  text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
-  text = text.replace(/\*([^*]+)\*/g, '$1');
-  text = text.replace(/__([^_]+)__/g, '$1');
-  text = text.replace(/_([^_]+)_/g, '$1');
-  
-  // Remove blockquotes
-  text = text.replace(/^> (.+)$/gm, '$1');
-  
-  // Remove links but keep the text
-  text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-  
-  // Remove horizontal rules
-  text = text.replace(/^[-*_]{3,}$/gm, '');
-  
-  // Remove duplicate line breaks
-  text = text.replace(/\n{3,}/g, '\n\n');
-  
-  // Remove any remaining special characters
-  text = text.replace(/[`~^]/g, '');
-  
-  return text.trim();
+  return blocks;
 };
 
-// Tarantino-inspired AI personality phrases
-const tarantinoResponses = [
-  "Gerai, klausyk. Štai ką tau pasakysiu...",
-  "Tiesiai šviesiai, be jokio šūdo...",
-  "Matai, problema yra tokia...",
-  "Leisk man išsiaiškinti šitą reikalą...",
-  "Klausyk atidžiai, nes tai svarbu...",
-  "Yra du būdai į tai pažiūrėti...",
-  "Štai kaip aš tai matau...",
-  "Tai ne šiaip atsakymas, tai planas...",
-  "Turi suprasti vieną dalyką..."
+// Pakeičiame tarantiniškus atsakymus į profesionalius
+const initialResponses = [
+  "Sveiki! Kaip galėčiau jums padėti?",
+  "Suprantu jūsų užklausą. Paklauskite detaliau apie tai, kas jums rūpi.",
+  "Papasakokite daugiau apie savo tikslus, kad galėčiau efektyviau padėti.",
+  "Mielai padėsiu. Kokios konkrečios pagalbos jums reikia?",
+  "Esu pasiruošusi padėti. Kokia pagalba jums reikalinga?"
 ];
 
 // Main component
@@ -366,21 +462,25 @@ const AIChat = () => {
   
   // Numatytasis pasisveikinimo pranešimas
   function getDefaultWelcomeMessage() {
+    const welcomeText = "Sveiki! Aš esu Džiuljeta, jūsų asmeninė produktyvumo ir akademinė asistentė. Galiu padėti jums efektyviai planuoti ir atlikti užduotis, ypač akademines. Papasakokite, su kokia užduotimi šiuo metu dirbate?";
+    
     return [{
       id: 'welcome',
-      text: "Sveiki, čia Džiuljeta - tavo produktyvumo konsultantė su tarantiniška energija. Esu čia, kad padėčiau tau susitvarkyti su užduotimis taip efektyviai, kad tai atrodytų kaip veiksmo filmas! Sakyk, kuo galiu padėti?",
+      text: welcomeText,
+      blocks: [{ type: 'text', content: welcomeText }],
       sender: 'ai',
       timestamp: new Date().toISOString()
     }];
   }
   
+  // Atnaujinti siūlomus klausimus į labiau akademinius/produktyvumo
   const suggestedQueries = [
-    'Kaip efektyviai suskirstyti didelę užduotį?',
-    'Patarimai darbui iš namų',
-    'Kaip kovoti su prokrastinacija?',
-    'Fokusavimo technikos',
-    'Kaip planuoti darbo dieną?',
-    'Pomodoro metodo pritaikymas'
+    'Kaip efektyviai suplanuoti baigiamojo darbo rašymą?',
+    'Patarimai akademinių šaltinių paieškai',
+    'Kaip geriau valdyti laiką ruošiantis egzaminams?',
+    'Efektyvūs mokymosi metodai',
+    'Kaip parašyti gerą įvadą akademiniam darbui?',
+    'Patarimai prezentacijos ruošimui'
   ];
   
   // Išsaugoti pranešimus į localStorage
@@ -470,16 +570,55 @@ const AIChat = () => {
     try {
       setIsStreaming(true);
       
-      // Use stream capability of Pollinations API
+      const codeExamplePython = "def hello_world():\n    print(\"Hello, world!\")";
+      const codeExampleJS = "function helloWorld() {\n  console.log(\"Hello, world!\");\n}";
+      const codeExampleHTML = "<div class=\"container\">\n  <h1>Sveiki!</h1>\n  <p>Tai yra pavyzdys.</p>\n</div>";
+      const codeExampleCSS = ".container {\n  display: flex;\n  padding: 20px;\n}";
+      
+      const systemPrompt = `Tu esi Džiuljeta - profesionali produktyvumo ir akademinė asistentė. Tavo tikslas yra padėti vartotojams efektyviai atlikti užduotis, ypač akademines ir darbo užduotis.
+
+BENDRAVIMO STILIUS:
+- Kalbi aiškiai, profesionaliai ir draugiškai
+- Vengi nereikalingų įžangų - iškart pereini prie esmės
+- Visada prašai patikslinti užduotį, jei ji nepakankamai aiški
+- Siūlai konkrečius, praktiškus sprendimus
+
+TEKSTO FORMATAVIMAS:
+1. Rašai paprastą tekstą be specialių simbolių (*, **, #, _, -)
+2. Numeruotus sąrašus rašai paprastai: 1. 2. 3.
+3. Punktus pradedi žodžiu "Punktas:" arba skaičiumi ir tašku
+4. Svarbias mintis išskiri naujoje eilutėje
+5. Naudoji aiškius paragrafus su tuščiomis eilutėmis tarp jų
+
+KODO FORMATAVIMAS - LABAI SVARBU:
+1. Kodą VISADA pateik tarp trijų pasvirųjų kabučių, nurodydama programavimo kalbą
+2. Visada nurodyk programavimo kalbą po trijų pasvirųjų kabučių pradžioje
+3. Visada naudok tinkamą kodo formatavimą - indentaciją, tarpus
+4. Pridėk komentarus kode, kad paaiškintum svarbias dalis
+5. Visada užbaik kodo bloką su trim pasviromis kabutėmis
+
+AKADEMINĖ PAGALBA:
+- Padedi struktūruoti akademinius darbus
+- Siūlai tyrimų metodologijas
+- Patari dėl šaltinių paieškos
+- Padedi planuoti darbo etapus
+- Teiki patarimus dėl akademinio rašymo
+
+PRODUKTYVUMO SKATINIMAS:
+- Siūlai efektyvius laiko planavimo metodus
+- Padedi nustatyti prioritetus
+- Rekomenduoji poilsio ir darbo balansą
+- Teiki motyvaciją ir palaikymą`;
+
       const response = await fetch('https://text.pollinations.ai/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: conversationHistory,
-          model: 'openai-large',
+          model: 'openai',
           stream: true,
           private: true,
-          system: "Tu esi Džiuljeta, asistentė, kuri kalba tarantiniškuoju stilium - drąsiai, tiesiai šviesiai, kartais su įdomiais posakiais. Tu esi produktyvumo ekspertė, kuri mėgsta kino filmus ir padedi žmonėms efektyviai atlikti užduotis. Vengk ilgų įžangų, eik tiesiai prie esmės. Būk draugiška, bet užtikrinta. Venkite pilkų, nuobodžių atsakymų - būk asmenybė! Kai klientas užduoda klausimą, atsakyk tiksliai, aiškiai. Nekalbėk abstrakčiai - duok konkrečių pavyzdžių ir metodų."
+          system: systemPrompt
         }),
         signal
       });
@@ -492,19 +631,10 @@ const AIChat = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       
-      // Sometimes API adds a Tarantino phrase, but we already have our own system
-      // So we'll check if response already started with a Tarantino phrase
-      let hasIntroPhrase = false;
-      let randomIntro = '';
-      
-      // 60% chance to add a Tarantino phrase
-      const useIntroPhrase = Math.random() > 0.4;
-      if (useIntroPhrase) {
-        randomIntro = tarantinoResponses[Math.floor(Math.random() * tarantinoResponses.length)];
-        hasIntroPhrase = true;
-      }
-      
-      let accumulatedText = useIntroPhrase ? `${randomIntro}\n\n` : '';
+      // 30% tikimybė pridėti pradinį atsakymą
+      const useInitialResponse = Math.random() > 0.7;
+      let accumulatedText = useInitialResponse ? 
+        `${initialResponses[Math.floor(Math.random() * initialResponses.length)]}\n\n` : '';
       
       while (true) {
         const { done, value } = await reader.read();
@@ -529,7 +659,7 @@ const AIChat = () => {
                 
                 // Update message with latest text
                 setMessages(prev => prev.map(msg => 
-                  msg.id === aiMessageId ? { ...msg, text: accumulatedText } : msg
+                  msg.id === aiMessageId ? { ...msg, text: accumulatedText, blocks: cleanResponse(accumulatedText) } : msg
                 ));
                 
                 // Scroll to bottom to see latest messages
@@ -576,6 +706,55 @@ const AIChat = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
   
+  // Modify the rendering of messages to support code blocks
+  const renderMessageContent = (message) => {
+    // If message doesn't have blocks property or is a user message, just render the text
+    if (!message.blocks || message.sender === 'user') {
+      return <div className="message-text">{message.text}</div>;
+    }
+
+    // Render blocks with proper formatting
+    return (
+      <div className="message-text">
+        {message.blocks.map((block, index) => {
+          if (block.type === 'code') {
+            return (
+              <CodeBlock key={index}>
+                <div className="code-header">
+                  <div className="language-tag">
+                    <FontAwesomeIcon icon={faCode} />
+                    {block.language || 'Text'}
+                  </div>
+                </div>
+                <div className="code-content">
+                  <SyntaxHighlighter 
+                    language={block.language || 'text'} 
+                    style={atomDark} 
+                    wrapLines={true}
+                    customStyle={{
+                      margin: 0,
+                      borderRadius: 0,
+                      fontFamily: 'Consolas, Monaco, monospace'
+                    }}
+                  >
+                    {block.content}
+                  </SyntaxHighlighter>
+                </div>
+              </CodeBlock>
+            );
+          } else {
+            return <div key={index}>{block.content}</div>;
+          }
+        })}
+        {message.id === messages[messages.length - 1].id && 
+         message.sender === 'ai' && 
+         isStreaming && (
+          <span className="cursor">|</span>
+        )}
+      </div>
+    );
+  };
+  
   return (
     <ChatContainer
       variants={containerVariants}
@@ -588,7 +767,7 @@ const AIChat = () => {
           <h2>
             <FontAwesomeIcon icon={faFilm} /> Produktyvo AI Chatas
           </h2>
-          <p>Džiuljeta - tavo asmeninė tarantiniško stiliaus produktyvumo konsultantė</p>
+          <p>Džiuljeta - tavo asmeninė akademinė ir produktyvumo asistentė</p>
         </div>
         <div className="action-buttons">
           <ActionButton title="Išvalyti pokalbį" $danger onClick={handleClearChat}>
@@ -619,14 +798,7 @@ const AIChat = () => {
                   <FontAwesomeIcon icon={message.sender === 'user' ? faUser : faFilm} />
                 </div>
                 <div className="message-content">
-                  <div className="message-text">
-                    {message.text}
-                    {message.id === messages[messages.length - 1].id && 
-                     message.sender === 'ai' && 
-                     isStreaming && (
-                      <span className="cursor">|</span>
-                    )}
-                  </div>
+                  {renderMessageContent(message)}
                   <div className="message-meta">
                     <div className="message-time">{formatTimestamp(message.timestamp)}</div>
                   </div>
