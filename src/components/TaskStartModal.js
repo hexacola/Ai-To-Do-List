@@ -3,1053 +3,520 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faTimes, 
-  faClock, 
-  faPlay,
-  faPause,
-  faLightbulb,
-  faSpinner,
-  faCheck,
-  faSync,
-  faListUl,
-  faInfoCircle
+  faPlay, faPause, faStop, faCheckCircle, 
+  faCircle, faClock, faTimes, faCheck, 
+  faTrophy, faStopwatch, faCalendarCheck
 } from '@fortawesome/free-solid-svg-icons';
-import { usePollinationsText, getDomainTips, generateTips } from '../hooks/usePollinationsAPI';
+import { completeTask, completeSubtask } from '../utils/rewards';
 
-// Modal background - covers entire screen
 const ModalOverlay = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px;
-  backdrop-filter: blur(4px);
+  padding: var(--spacing-md);
 `;
 
-// Modal content container
 const ModalContent = styled(motion.div)`
-  background-color: var(--secondary-black);
-  border: 2px solid var(--primary-yellow);
+  background-color: var(--card-background);
   max-width: 800px;
-  width: 100%;
+  width: 90%;
+  border-radius: 0;
+  box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.3);
+  border: 3px solid var(--primary-yellow);
+  border-left: 10px solid var(--primary-red);
+  overflow: auto;
   max-height: 90vh;
-  overflow-y: auto;
-  padding: 2rem;
-  position: relative;
-  border-radius: 4px;
-  box-shadow: 0 0 40px rgba(247, 208, 44, 0.2);
-  
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(255, 253, 208, 0.05);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--primary-yellow);
-    border-radius: 4px;
-  }
+  display: flex;
+  flex-direction: column;
 `;
 
 const ModalHeader = styled.div`
+  background-color: var(--primary-yellow);
+  padding: var(--spacing-md);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
   
   h2 {
+    color: var(--text-color);
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    color: var(--primary-yellow);
     margin: 0;
-    line-height: 1.2;
-    max-width: 80%;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    font-size: 2rem;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    
+    svg {
+      color: var(--primary-red);
+      font-size: 1.6rem;
+      filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.2));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: var(--spacing-sm);
+    
+    h2 {
+      font-size: 1.6rem;
+    }
   }
 `;
 
 const CloseButton = styled.button`
-  background: transparent;
+  background: none;
   border: none;
-  color: var(--primary-yellow);
+  color: var(--primary-red);
   font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0;
+  transition: transform 0.2s ease;
   
   &:hover {
-    color: var(--primary-red);
-    transform: scale(1.1);
+    transform: scale(1.2);
   }
 `;
 
-const TimerSection = styled.div`
+const ModalBody = styled.div`
+  padding: var(--spacing-lg);
+  flex: 1;
+  overflow-y: auto;
+  
+  @media (max-width: 480px) {
+    padding: var(--spacing-md);
+  }
+`;
+
+const Timer = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 253, 208, 0.1);
-`;
-
-const TimerDisplay = styled.div`
-  font-family: 'Oswald', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
+  gap: 15px;
+  background-color: var(--primary-red);
   color: var(--primary-yellow);
-  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
-  letter-spacing: 2px;
-  margin-bottom: 1rem;
-`;
-
-const TimerControls = styled.div`
-  display: flex;
-  gap: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1.5px;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+  
+  &::before {
+    content: 'Laikmatis';
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background-color: var(--primary-yellow);
+    color: var(--primary-red);
+    padding: 0 10px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  
+  .timer-display {
+    font-size: 3rem;
+    margin-right: auto;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  .timer-controls {
+    display: flex;
+    gap: 12px;
+  }
+  
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .timer-display {
+      text-align: center;
+      margin-right: 0;
+      margin-bottom: 15px;
+    }
+    
+    .timer-controls {
+      justify-content: center;
+    }
+  }
 `;
 
 const TimerButton = styled.button`
-  background-color: ${props => props.$isPrimary ? 'var(--primary-yellow)' : 'transparent'};
-  color: ${props => props.$isPrimary ? 'var(--secondary-black)' : 'var(--primary-yellow)'};
-  border: 2px solid var(--primary-yellow);
-  padding: 0.75rem 1.5rem;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.2rem;
-  letter-spacing: 1px;
+  background-color: var(--primary-yellow);
+  color: var(--text-color);
+  border: none;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  font-size: 1.5rem;
   cursor: pointer;
+  border-radius: 0;
   transition: all 0.2s ease;
-  border-radius: 3px;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
   
   &:hover {
-    background-color: ${props => props.$isPrimary ? 'var(--primary-red)' : 'rgba(255, 253, 208, 0.1)'};
-    border-color: ${props => props.$isPrimary ? 'var(--primary-red)' : 'var(--primary-yellow)'};
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
   }
-`;
-
-const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
   
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
+  }
+  
+  &.stop {
+    background-color: #ff3b30;
+    color: white;
+  }
+  
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
   }
 `;
 
-const SubtasksSection = styled.div`
+const SubtaskList = styled.div`
+  margin-top: var(--spacing-lg);
+  
   h3 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
     color: var(--primary-yellow);
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    letter-spacing: 1.2px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 12px;
+    
+    svg {
+      color: var(--primary-red);
+      font-size: 1.3rem;
+    }
   }
 `;
 
-const SubtaskList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const SubtaskItem = styled.li`
+const SubtaskItem = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  margin-bottom: 0.75rem;
-  border-left: 3px solid var(--primary-yellow);
-  color: var(--secondary-cream);
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: ${props => props.$completed ? 'rgba(0, 200, 0, 0.1)' : 'rgba(0, 0, 0, 0.05)'};
+  margin-bottom: var(--spacing-sm);
+  border-left: 5px solid ${props => props.$completed ? 'var(--completed-color)' : 'var(--primary-yellow)'};
+  transition: all 0.3s ease;
   position: relative;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
   
-  .subtask-number {
-    background-color: var(--primary-yellow);
-    color: var(--secondary-black);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    flex-shrink: 0;
+  &:hover {
+    transform: translateX(3px);
+    background-color: ${props => props.$completed ? 'rgba(0, 200, 0, 0.15)' : 'rgba(0, 0, 0, 0.08)'};
   }
   
-  .subtask-content {
-    flex-grow: 1;
+  .subtask-checkbox {
+    color: ${props => props.$completed ? 'var(--completed-color)' : 'var(--primary-yellow)'};
+    font-size: 1.6rem;
+    margin-right: 15px;
+    cursor: pointer;
+    min-width: 24px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+  
+  .subtask-text {
+    flex: 1;
+    text-decoration: ${props => props.$completed ? 'line-through' : 'none'};
+    color: ${props => props.$completed ? 'var(--subtask-text-color)' : 'var(--text-color)'};
+    transition: all 0.3s ease;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.3;
   }
   
   .subtask-time {
+    background-color: var(--primary-yellow);
+    color: var(--text-color);
+    padding: 5px 10px;
+    font-size: 0.95rem;
+    font-family: 'Bebas Neue', sans-serif;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    color: var(--primary-yellow);
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
+    gap: 8px;
+    letter-spacing: 0.8px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
     
     svg {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
   }
   
-  &.active {
-    border-left-color: var(--primary-red);
-    background-color: rgba(178, 34, 34, 0.1);
-    box-shadow: 0 0 15px rgba(178, 34, 34, 0.2);
-  }
-  
-  &.completed {
-    opacity: 0.6;
-    text-decoration: line-through;
+  @media (max-width: 480px) {
+    padding: var(--spacing-sm);
     
-    .subtask-number {
-      background-color: var(--accent-green);
+    .subtask-checkbox {
+      font-size: 1.4rem;
+      margin-right: 10px;
+    }
+    
+    .subtask-time {
+      font-size: 0.85rem;
+      padding: 4px 8px;
     }
   }
 `;
 
-const CurrentSubtaskHighlight = styled.div`
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: var(--primary-red);
-  color: var(--secondary-cream);
-  font-size: 0.7rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 2px;
-  font-family: 'Bebas Neue', sans-serif;
-  letter-spacing: 0.5px;
-  transform: rotate(3deg);
-`;
-
-const TipsSection = styled.div`
-  h3 {
+const CompletionSection = styled.div`
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+  border-left: 5px solid var(--primary-yellow);
+  
+  .completion-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
     color: var(--primary-yellow);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-`;
-
-const TipsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 0.5rem;
-`;
-
-const TipCard = styled.div`
-  background: rgba(255, 253, 208, 0.05);
-  border-left: 3px solid var(--primary-yellow);
-  padding: 0.85rem 1.1rem;
-  border-radius: 4px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-  
-  &:hover {
-    transform: translateX(2px) translateY(-1px);
-    background: rgba(255, 253, 208, 0.08);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 1.6rem;
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 1px;
+    text-align: center;
+    
+    svg {
+      margin-right: 10px;
+      color: var(--primary-red);
+    }
   }
   
-  &:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primary-yellow), transparent);
-    opacity: 0.5;
+  .progress-container {
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 18px;
+    margin: var(--spacing-md) 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
   }
   
-  & + & {
-    margin-top: 0.5rem;
-  }
-`;
-
-const TipHeader = styled.div`
-  font-weight: 700;
-  color: var(--primary-yellow);
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.05rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
-  
-  svg {
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-  }
-`;
-
-const TipContent = styled.div`
-  font-size: 0.95rem;
-  color: var(--primary-white);
-  opacity: 0.92;
-  line-height: 1.5;
-  
-  strong, b {
-    color: var(--secondary-cream);
-    font-weight: 600;
-  }
-  
-  em, i {
-    font-style: italic;
-    opacity: 0.85;
-  }
-  
-  code {
-    font-family: 'Courier New', monospace;
-    background-color: rgba(0, 0, 0, 0.25);
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    font-size: 0.9em;
-    color: var(--primary-yellow);
-    letter-spacing: 0.5px;
-  }
-`;
-
-const ProgressBar = styled.div`
-  width: 100%;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 1.5rem;
-  
-  .progress {
+  .progress-bar {
     height: 100%;
     background-color: var(--primary-yellow);
-    width: ${props => props.$progress}%;
-    transition: width 0.3s ease;
+    transition: width 0.8s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        45deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.2) 25%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 50%,
+        transparent 75%,
+        rgba(255, 255, 255, 0.2) 75%
+      );
+      background-size: 30px 30px;
+      animation: move 2s linear infinite;
+      
+      @keyframes move {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 60px 0;
+        }
+      }
+    }
+  }
+  
+  .completion-stats {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--primary-yellow);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-md);
+    letter-spacing: 0.8px;
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   }
 `;
 
-const RefreshButton = styled.button`
-  background: none;
+const CompleteButton = styled(motion.button)`
+  background-color: var(--completed-color);
+  color: white;
   border: none;
-  color: var(--primary-yellow);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 1.5px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  cursor: pointer;
-  padding: 0.5rem;
-  margin-top: 1rem;
-  opacity: 0.7;
-  transition: all 0.2s ease;
+  justify-content: center;
+  gap: 12px;
+  margin: var(--spacing-lg) auto;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
   
-  &:hover {
-    opacity: 1;
-    transform: translateY(-2px);
+  svg {
+    font-size: 1.4rem;
+    filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.2));
+  }
+  
+  &:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 `;
 
-// Component to format and display tips
-const Tips = ({ tips, loading, error, onRefresh, isFromDomainCache }) => {
-  if (loading) {
-    return (
-      <TipsList>
-        <TipCard>
-          <TipContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1.5rem 0' }}>
-            <FontAwesomeIcon icon={faSpinner} spin size="lg" />
-          </TipContent>
-        </TipCard>
-      </TipsList>
-    );
-  }
+const formatTime = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
   
-  if (error) {
-    return (
-      <TipsList>
-        <TipCard>
-          <TipContent>
-            <div style={{ marginBottom: '0.75rem' }}>
-              Klaida įkelti patarimus: {error}
-            </div>
-            {onRefresh && (
-              <div style={{ marginTop: '0.75rem' }}>
-                <RefreshButton onClick={onRefresh}>
-                  <FontAwesomeIcon icon={faSync} />
-                  PABANDYKITE KITAI
-                </RefreshButton>
-              </div>
-            )}
-          </TipContent>
-        </TipCard>
-      </TipsList>
-    );
-  }
-  
-  if (!tips) {
-    return (
-      <TipsList>
-        <TipCard>
-          <TipContent>Susitelkite į šį užduoties žingsnį, suskaidydami jį į įveikiamas dalis.</TipContent>
-        </TipCard>
-      </TipsList>
-    );
-  }
-  
-  // Source badge styling
-  const SourceBadge = styled.div`
-    display: inline-block;
-    background-color: ${props => props.$domain ? 'var(--accent-green)' : 'var(--primary-yellow)'};
-    color: var(--secondary-black);
-    font-size: 0.65rem;
-    padding: 2px 6px;
-    border-radius: 2px;
-    font-weight: bold;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.5px;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  `;
-  
-  // Process tips to handle different formats
-  const processTips = () => {
-    try {
-      // If tips is a string, process and clean it
-      if (typeof tips === 'string') {
-        // Handle empty or invalid strings
-        if (!tips.trim()) {
-          return [(
-            <TipCard key="empty">
-              <TipContent>Nėra konkrečių patarimų. Pabandykite atnaujinti.</TipContent>
-            </TipCard>
-          )];
-        }
-        
-        // First, clean the text of unwanted formatting symbols and section numbers
-        let cleanedText = tips
-          // Remove section markers like ###, ##, etc.
-          .replace(/#{1,6}\s*/g, '')
-          // Remove numbered sections like "1." or "Step 1:" at the beginning of lines
-          .replace(/^\d+\.\s*|^Step\s*\d+:?\s*/gmi, '')
-          // Clean up any excessive whitespace
-          .trim();
-        
-        // Split by common bullet point patterns
-        const tipItems = cleanedText.split(/\n-|\n•|\n\*|\n\d+\.|^\d+\.|^\*\*\d+\.\s*/).filter(Boolean).map((tip, index) => {
-          try {
-            // Try to extract bold header if it exists
-            const boldHeaderMatch = tip.match(/\*\*(.*?)\*\*|<strong>(.*?)<\/strong>/);
-            let header = boldHeaderMatch ? (boldHeaderMatch[1] || boldHeaderMatch[2]) : '';
-            let content = tip;
-            
-            if (boldHeaderMatch) {
-              // Remove the header part from the content
-              content = content.replace(boldHeaderMatch[0], '').trim();
-              
-              // If the header was at the start and followed by punctuation, remove that too
-              content = content.replace(/^[:.,-]\s*/, '');
-            } else {
-              // If no explicit header, try to use the first sentence as a header
-              const firstSentenceMatch = content.match(/^([^.!?]+[.!?]+)\s*/);
-              if (firstSentenceMatch) {
-                header = firstSentenceMatch[1].trim();
-                content = content.replace(firstSentenceMatch[0], '').trim();
-              }
-            }
-            
-            // Clean any content prefixes like "Tip:" or similar
-            content = content.replace(/^(Tip|Advice|Strategy|Technique):\s*/i, '');
-            
-            // Process content with React-safe HTML
-            const processContent = (text) => {
-              try {
-                // First, escape any potential HTML
-                let processed = text
-                  // Clean up any excessive whitespace
-                  .replace(/\s{2,}/g, ' ')
-                  .trim();
-                
-                // Replace markdown with React components or HTML
-                const segments = [];
-                
-                // Split the text by markdown patterns
-                const parts = processed.split(/(\*\*.*?\*\*|\*.*?\*|_.*?_|`.*?`)/g);
-                
-                parts.forEach((part, i) => {
-                  // Bold text
-                  if (part && part.startsWith('**') && part.endsWith('**')) {
-                    const inner = part.slice(2, -2);
-                    segments.push(<strong key={i}>{inner}</strong>);
-                  }
-                  // Italic text
-                  else if (part && ((part.startsWith('*') && part.endsWith('*')) || 
-                          (part.startsWith('_') && part.endsWith('_')))) {
-                    const inner = part.slice(1, -1);
-                    segments.push(<em key={i}>{inner}</em>);
-                  }
-                  // Code/monospace text
-                  else if (part && part.startsWith('`') && part.endsWith('`')) {
-                    const inner = part.slice(1, -1);
-                    segments.push(<code key={i}>{inner}</code>);
-                  }
-                  // Regular text
-                  else if (part && part.trim()) {
-                    segments.push(part);
-                  }
-                });
-                
-                return segments.length > 0 ? segments : text;
-              } catch (err) {
-                console.warn('Error processing content formatting:', err);
-                return text;
-              }
-            };
-            
-            // Clean header of any remaining markdown for display
-            const cleanHeader = header
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/`/g, '')
-              .replace(/_/g, '');
-            
-            return (
-              <TipCard key={index}>
-                {cleanHeader && <TipHeader><FontAwesomeIcon icon={faLightbulb} size="sm" /> {cleanHeader}</TipHeader>}
-                <TipContent>{processContent(content)}</TipContent>
-              </TipCard>
-            );
-          } catch (tipError) {
-            console.warn('Error processing individual tip:', tipError);
-            return (
-              <TipCard key={index}>
-                <TipContent>{tip}</TipContent>
-              </TipCard>
-            );
-          }
-        });
-        
-        return tipItems.length > 0 ? tipItems : [(
-          <TipCard key="fallback">
-            <TipContent>Susitelkite į šį užduoties žingsnį, suskaidydami jį į įveikiamas dalis.</TipContent>
-          </TipCard>
-        )];
-      }
-      
-      // Handle non-string formats
-      if (tips && typeof tips === 'object') {
-        try {
-          return (
-            <TipCard key="object">
-              <TipContent>{JSON.stringify(tips)}</TipContent>
-            </TipCard>
-          );
-        } catch (jsonError) {
-          console.warn('Error stringifying tips object:', jsonError);
-          return (
-            <TipCard key="error">
-              <TipContent>Patarimai yra, bet jų negalima rodyti. Pabandykite atnaujinti.</TipContent>
-            </TipCard>
-          );
-        }
-      }
-      
-      // Default fallback
-      return (
-        <TipCard key="unknown">
-          <TipContent>Nėra atpažįstamo formato patarimų. Pabandykite atnaujinti.</TipContent>
-        </TipCard>
-      );
-    } catch (error) {
-      console.error('Error processing tips:', error);
-      return (
-        <TipCard key="error">
-          <TipContent>Klaida apdorojant patarimus. Pabandykite atnaujinti, kad gautumėte naujus vykdymo patarimus.</TipContent>
-        </TipCard>
-      );
-    }
-  };
-  
-  return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <div style={{ fontSize: '0.8rem', color: 'var(--primary-yellow)', opacity: 0.8 }}>
-          <FontAwesomeIcon icon={faInfoCircle} size="sm" /> 
-          <span style={{ marginLeft: '0.25rem' }}>Šaltinis:</span> 
-          <SourceBadge $domain={isFromDomainCache}>
-            {isFromDomainCache ? 'SRITIES EKSPERTAS' : 'DI TRENERIS'}
-          </SourceBadge>
-        </div>
-      </div>
-      <TipsList>{processTips()}</TipsList>
-      {onRefresh && (
-        <RefreshButton onClick={onRefresh}>
-          <FontAwesomeIcon icon={faSync} />
-          ATNAUJINTI PATARIMUS
-        </RefreshButton>
-      )}
-    </>
-  );
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+const TaskStartModal = ({ task, isOpen, onClose, onTaskComplete, toggleSubtask }) => {
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [currentSubtaskIndex, setCurrentSubtaskIndex] = useState(0);
-  const [tipPrompt, setTipPrompt] = useState('');
-  const [tips, setTips] = useState(null);
-  const [tipsLoading, setTipsLoading] = useState(true);
-  const [tipsError, setTipsError] = useState(null);
-  const [isFromDomainCache, setIsFromDomainCache] = useState(false);
-  
-  // Get current subtask
-  const currentSubtask = task?.subtasks?.[currentSubtaskIndex] || null;
-  
-  // Timer interval ref
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const timerRef = useRef(null);
+  const [completedSubtasks, setCompletedSubtasks] = useState(task?.subtasksCompleted || []);
+  const [showCompletionMessage, setShowCompletionMessage] = useState(false);
   
-  // Reset currentSubtaskIndex when task changes
   useEffect(() => {
+    // Inicializuojame completedSubtasks, kai task pasikeičia
     if (task) {
-      setCurrentSubtaskIndex(0);
+      setCompletedSubtasks(task.subtasksCompleted || Array(task.subtasks?.length || 0).fill(false));
       setTimeElapsed(0);
+      setIsTimerRunning(false);
+      clearInterval(timerRef.current);
     }
-  }, [task?.id]);
+  }, [task]);
   
-  // Create user prompt for tips generation
   useEffect(() => {
-    try {
-      // Only proceed if we have a valid task and subtask
-      if (!task || !currentSubtask) {
-        // If we're showing the modal but don't have task/subtask data yet, 
-        // just show loading state without error
-        if (isOpen) {
-          setTipsLoading(true);
-          setTipsError(null);
-        }
-        return;
-      }
-      
-      // Safe extraction of subtask text with null checks
-      const subtaskText = typeof currentSubtask === 'string' 
-        ? currentSubtask 
-        : (currentSubtask?.text || '');
-      
-      // Reset tips state
-      setTips(null);
-      setTipsLoading(true);
-      setTipsError(null);
-      
-      // Generate a unique identifier for this specific task/subtask combination
-      const uniqueId = `${task.id || 'unknown'}-${currentSubtaskIndex}-${Date.now()}`;
-      
-      // Safely check for domain-specific tips
-      const taskText = task.text || '';
-      const domainTips = taskText ? getDomainTips(taskText, subtaskText) : null;
-      
-      // If we have pre-cached domain tips, use them immediately 
-      if (domainTips) {
-        setTips(domainTips);
-        setTipsLoading(false);
-        setIsFromDomainCache(true);
-      } else {
-        // Otherwise, generate tips via API
-        setIsFromDomainCache(false);
-        
-        // Create a unique prompt that forces a new API request
-        setTipPrompt(
-          `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${subtaskText}". ` +
-          `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (uid:${uniqueId})`
-        );
-      }
-    } catch (error) {
-      console.error('Error generating tips:', error);
-      setTipsError('Error preparing tips. Please try refreshing.');
-      setTipsLoading(false);
-    }
-  }, [task, currentSubtask, currentSubtaskIndex, isOpen]);
-  
-  // Only set up the API hook if we're actually going to use it
-  const { response: apiTips, loading: apiTipsLoading, error: apiTipsError } = usePollinationsText(
-    tipPrompt ? tipPrompt : null,
-    {
-      systemPrompt: "You are a world-class productivity coach and domain expert with deep knowledge in various fields. Your specialty is turning abstract tasks into concrete, executable actions with precision and clarity. " +
-                   "Your task is to provide 4-6 extremely specific, immediately actionable tips that will help the user execute their current task step with maximum efficiency and quality. " +
-                   
-                   "Follow these guidelines when creating your tips:" +
-                   
-                   "1. DOMAIN SPECIFICITY: Analyze what domain the task belongs to (programming, writing, research, design, etc.) and provide domain-specific advice using appropriate terminology and best practices from that field." +
-                   
-                   "2. EXECUTION TACTICS: Focus on HOW to perform the task, not just what to do. Include exact methods, recommended tools, shortcuts, or templates." +
-                   
-                   "3. IMPLEMENTATION SCIENCE: Incorporate evidence-based productivity techniques like:"+
-                   "   - Pomodoro Technique (25 min work/5 min break)"+
-                   "   - Implementation intentions ('When X happens, I will do Y')"+
-                   "   - Parkinson's Law (set artificial deadlines)"+
-                   "   - Pareto Principle (focus on the 20% of work that yields 80% of results)"+
-                   "   - Time blocking and deep work principles"+
-                   "   - Starting rituals to overcome resistance"+
-                   
-                   "4. OVERCOME OBSTACLES: Anticipate 1-2 common obstacles for this specific step and provide preventative strategies." +
-                   
-                   "5. FORMAT CLEARLY: Each tip should start with a bold header summarizing the tip, followed by a concise explanation with specific details, examples or templates when relevant." +
-                   
-                   "6. MEASURABLE COMPLETION: Include how the user will know they've successfully completed this step and how to validate quality." +
-                   
-                   "Format your response with bullet points and bold headers for readability. Make every tip concrete, tactical, and immediately applicable to the SPECIFIC subtask they're working on."
-    }
-  );
-  
-  // Sync API tips to our state when they arrive
-  useEffect(() => {
-    if (tipPrompt && apiTips) {
-      setTips(apiTips);
-    }
-  }, [apiTips, tipPrompt]);
-  
-  // Update loading state based on API
-  useEffect(() => {
-    if (tipPrompt) {
-      setTipsLoading(apiTipsLoading);
-    }
-  }, [apiTipsLoading, tipPrompt]);
-  
-  // Update error state based on API
-  useEffect(() => {
-    if (tipPrompt && apiTipsError) {
-      setTipsError(apiTipsError);
-      setTipsLoading(false);
-    }
-  }, [apiTipsError, tipPrompt]);
-  
-  // Reset tips when the modal is closed
-  useEffect(() => {
-    if (!isOpen) {
-      setTips(null);
-      setTipsLoading(true);
-      setTipsError(null);
-      setTipPrompt('');
-    }
-  }, [isOpen]);
-  
-  // Timer functionality
-  useEffect(() => {
-    if (isOpen && isTimerRunning) {
+    // Timer funkcionalumas
+    if (isTimerRunning) {
       timerRef.current = setInterval(() => {
         setTimeElapsed(prev => prev + 1);
       }, 1000);
-    } else if (timerRef.current) {
+    } else {
       clearInterval(timerRef.current);
     }
     
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
+    return () => clearInterval(timerRef.current);
+  }, [isTimerRunning]);
+  
+  const handleToggleTimer = () => {
+    setIsTimerRunning(prev => !prev);
+  };
+  
+  const handleResetTimer = () => {
+    setIsTimerRunning(false);
+    clearInterval(timerRef.current);
+    setTimeElapsed(0);
+  };
+  
+  const handleSubtaskToggle = (index) => {
+    const newCompletedSubtasks = [...completedSubtasks];
+    newCompletedSubtasks[index] = !newCompletedSubtasks[index];
+    setCompletedSubtasks(newCompletedSubtasks);
+    
+    if (toggleSubtask) {
+      toggleSubtask(task.id, index);
+      
+      // Jei viskas pažymėta, rodome completion message
+      if (newCompletedSubtasks.every(Boolean)) {
+        setShowCompletionMessage(true);
       }
+    }
+  };
+  
+  const handleTaskComplete = () => {
+    // Sustabdome laikmatį
+    setIsTimerRunning(false);
+    clearInterval(timerRef.current);
+    
+    // Atnaujiname task su subtasksCompleted ir timeSpent
+    const updatedTask = {
+      ...task,
+      subtasksCompleted: completedSubtasks,
+      timeSpent: Math.max(timeElapsed / 60, 1), // Konvertuojame sekundes į minutes
+      completed: true
     };
-  }, [isOpen, isTimerRunning]);
-  
-  // Format time for display (HH:MM:SS)
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
     
-    return [
-      hours.toString().padStart(2, '0'),
-      minutes.toString().padStart(2, '0'),
-      secs.toString().padStart(2, '0')
-    ].join(':');
+    // Iškviečiame onTaskComplete callback
+    if (onTaskComplete) {
+      onTaskComplete(updatedTask);
+    }
+    
+    // Uždarome modalinį langą
+    onClose();
   };
   
-  // Calculate progress percentage
   const calculateProgress = () => {
-    if (!task || !task.subtasks) return 0;
-    const completedSubtasks = task.subtasksCompleted.filter(Boolean).length;
-    return (completedSubtasks / task.subtasks.length) * 100;
-  };
-  
-  // Handle play/pause
-  const toggleTimer = () => {
-    setIsTimerRunning(!isTimerRunning);
-  };
-  
-  // Move to next subtask with improved robustness
-  const completeCurrentSubtask = () => {
-    if (!task) {
-      console.warn('Cannot complete subtask: task is null');
-      return;
+    if (!task?.subtasks || task.subtasks.length === 0) {
+      return completedSubtasks[0] ? 100 : 0;
     }
-
-    if (task.subtasks && currentSubtaskIndex < task.subtasks.length - 1) {
-      try {
-        // First, mark the current subtask as complete
-        onCompleteSubtask(task.id, currentSubtaskIndex);
-        
-        // Capture the next subtask index
-        const nextSubtaskIndex = currentSubtaskIndex + 1;
-        
-        // Get the next subtask and text (with null safety)
-        const nextSubtask = task.subtasks[nextSubtaskIndex];
-        if (!nextSubtask) {
-          console.warn('Next subtask is null, but should exist');
-          return;
-        }
-        
-        const nextSubtaskText = typeof nextSubtask === 'string' 
-          ? nextSubtask 
-          : (nextSubtask?.text || '');
-        
-        // More aggressive clearing of state
-        setTips(null);
-        setTipPrompt('');
-        setTipsLoading(true);
-        setTipsError(null);
-        
-        // Force a state update and then proceed with the next subtask tips generation
-        // This helps ensure React properly notices the state changes
-        setTimeout(() => {
-          try {
-            // Check for domain-specific tips for the next subtask
-            const domainTips = task.text ? getDomainTips(task.text, nextSubtaskText) : null;
-            
-            if (domainTips) {
-              // If we have domain tips, use them immediately
-              setIsFromDomainCache(true);
-              setTips(domainTips);
-              setTipsLoading(false);
-            } else {
-              // Otherwise, prepare for API generation
-              setIsFromDomainCache(false);
-              
-              // Create a unique prompt for the next subtask with multiple uniqueness markers
-              const uniqueTimestamp = Date.now();
-              const randomStr = Math.random().toString(36).substring(2, 10);
-              const taskText = task.text || 'current task';
-              
-              // Completely unique prompt with multiple markers to prevent API caching
-              const newPrompt = `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${nextSubtaskText}". ` +
-                `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (Unique:${uniqueTimestamp}-${nextSubtaskIndex}-${randomStr})`;
-              
-              // Set the new prompt which will trigger the API request
-              setTipPrompt(newPrompt);
-            }
-            
-            // Then update the subtask index
-            setCurrentSubtaskIndex(nextSubtaskIndex);
-          } catch (error) {
-            console.error('Error while generating tips for next subtask:', error);
-            // Still update the subtask index even if there was an error
-            setCurrentSubtaskIndex(nextSubtaskIndex);
-            setTipsError('Error generating tips. Please try refreshing.');
-            setTipsLoading(false);
-          }
-        }, 50); // Small delay to ensure state updates are processed
-      } catch (error) {
-        console.error('Error in completeCurrentSubtask:', error);
-        // Handle errors gracefully
-        onCompleteSubtask(task.id, currentSubtaskIndex);
-        setCurrentSubtaskIndex(prev => prev + 1);
-        setTipsError('An error occurred. Try refreshing the tips.');
-        setTipsLoading(false);
-      }
-    } else if (task.id !== undefined && currentSubtaskIndex !== undefined) {
-      onCompleteSubtask(task.id, currentSubtaskIndex);
-      // All subtasks completed
-      onClose();
-    } else {
-      console.warn('Cannot complete subtask: task.id or currentSubtaskIndex is undefined');
-      onClose();
-    }
+    
+    const completedCount = completedSubtasks.filter(Boolean).length;
+    return Math.round((completedCount / task.subtasks.length) * 100);
   };
   
-  // Format time estimate for display
-  const formatTimeEstimate = (minutes) => {
-    if (!minutes) return "0 min";
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-  };
-  
-  // Function to refresh tips
-  const refreshTips = () => {
-    // Check if we have a valid task and subtask
-    if (!task || !currentSubtask) {
-      console.warn('Cannot refresh tips: task or subtask is null');
-      return;
-    }
-
-    // Safe extraction of subtask text
-    const subtaskText = typeof currentSubtask === 'string' 
-      ? currentSubtask 
-      : (currentSubtask?.text || '');
-    
-    // Clear existing tips and try domain-specific first
-    setTips(null);
-    setTipsLoading(true);
-    setTipsError(null);
-    
-    // Force tip prompt to change to trigger a new request
-    const timestamp = Date.now();
-    
-    // Safely get domain tips
-    const domainTips = task?.text ? getDomainTips(task.text, subtaskText) : null;
-    
-    if (domainTips) {
-      // Use domain tips if available
-      setTips(domainTips);
-      setTipsLoading(false);
-      setIsFromDomainCache(true);
-    } else {
-      // Otherwise generate via API by setting new prompt
-      setIsFromDomainCache(false);
-      
-      // Safe task text
-      const taskText = task?.text || 'current task';
-      
-      setTipPrompt(
-        `Dirbu su šia užduotimi: "${taskText}" ir konkrečiai šiuo žingsniu: "${subtaskText}". ` +
-        `Prašau pateikti 4-6 konkrečius, įgyvendinamus patarimus, kaip efektyviai atlikti šį žingsnį, remiantis moksliniais metodais ir geriausia praktika. Įtraukite srities specifinius patarimus, tikslias vykdymo taktikas, galimas kliūtis ir kaip žinosiu, kada šis žingsnis bus sėkmingai atliktas. (refresh: ${timestamp})`
-      );
-    }
-  };
-  
-  // Modal animations
-  const overlayVariants = {
+  const modalVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, transition: { duration: 0.3 } }
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
   };
   
   const contentVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1, 
-      transition: { 
-        type: "spring", 
-        damping: 25, 
-        stiffness: 300 
-      } 
-    },
-    exit: { 
-      opacity: 0, 
-      y: 20, 
-      scale: 0.95, 
-      transition: { duration: 0.2 } 
-    }
+    hidden: { y: 50, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 400, damping: 30 } },
+    exit: { y: 50, opacity: 0 }
   };
   
-  // Effect to generate tips when prompt changes
-  useEffect(() => {
-    if (!tipPrompt || tipPrompt.trim() === '') {
-      return;
-    }
-    
-    setTipsLoading(true);
-    
-    const controller = new AbortController();
-    const signal = controller.signal;
-    
-    generateTips(tipPrompt, signal)
-      .then(newTips => {
-        setTips(newTips);
-        setTipsLoading(false);
-      })
-      .catch(err => {
-        if (err.name !== 'AbortError') {
-          console.error('Error generating tips:', err);
-          setTipsError('Failed to generate tips. Please try again.');
-          setTipsLoading(false);
-        }
-      });
-    
-    return () => {
-      controller.abort();
-    };
-  }, [tipPrompt]);
+  if (!task || !isOpen) return null;
   
-  // Effect to generate tips when prompt changes - with improved robustness
-  useEffect(() => {
-    // Only proceed if we have a valid prompt
-    if (!tipPrompt || tipPrompt.trim() === '') {
-      return;
-    }
-    
-    // Clear any previous errors before starting a new request
-    setTipsError(null);
-    setTipsLoading(true);
-    
-    // Reset tips to ensure we don't show stale data
-    setTips(null);
-    
-    // Create a unique ID for this specific request for debugging
-    const requestId = Date.now();
-    console.log(`[${requestId}] Starting tip generation for prompt: ${tipPrompt.substring(0, 50)}...`);
-    
-    const controller = new AbortController();
-    const signal = controller.signal;
-    
-    // Use a small timeout to ensure the UI updates before the API call
-    const timeoutId = setTimeout(() => {
-      generateTips(tipPrompt, signal)
-        .then(newTips => {
-          console.log(`[${requestId}] Successfully generated tips`);
-          
-          // Double-check we're still on the same prompt (race condition protection)
-          if (tipPrompt) {
-            setTips(newTips);
-            setTipsLoading(false);
-          }
-        })
-        .catch(err => {
-          if (err.name !== 'AbortError') {
-            console.error(`[${requestId}] Error generating tips:`, err);
-            setTipsError('Failed to generate tips. Please try again.');
-            setTipsLoading(false);
-          } else {
-            console.log(`[${requestId}] Tip generation was aborted`);
-          }
-        });
-    }, 100);
-    
-    return () => {
-      console.log(`[${requestId}] Cleaning up tip generation effect`);
-      clearTimeout(timeoutId);
-      controller.abort();
-    };
-  }, [tipPrompt]);
+  const progress = calculateProgress();
+  const allCompleted = task.subtasks && task.subtasks.length > 0 
+    ? completedSubtasks.every(Boolean)
+    : completedSubtasks[0];
   
   return (
-    <AnimatePresence>
-      {isOpen && task && (
+    <AnimatePresence mode="wait">
+      {isOpen && (
         <ModalOverlay
           initial="hidden"
           animate="visible"
           exit="exit"
-          variants={overlayVariants}
+          variants={modalVariants}
           onClick={onClose}
         >
           <ModalContent
@@ -1057,84 +524,124 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
             onClick={e => e.stopPropagation()}
           >
             <ModalHeader>
-              <h2>{task.text}</h2>
+              <h2>
+                <FontAwesomeIcon icon={faPlay} />
+                {task.text}
+              </h2>
               <CloseButton onClick={onClose}>
                 <FontAwesomeIcon icon={faTimes} />
               </CloseButton>
             </ModalHeader>
             
-            <TimerSection>
-              <TimerDisplay>{formatTime(timeElapsed)}</TimerDisplay>
-              <TimerControls>
-                <TimerButton 
-                  $isPrimary 
-                  onClick={toggleTimer}
-                >
-                  <FontAwesomeIcon icon={isTimerRunning ? faPause : faPlay} />
-                  {isTimerRunning ? 'PAUZĖ' : 'PRADĖTI'}
-                </TimerButton>
-                <TimerButton 
-                  onClick={completeCurrentSubtask}
-                >
-                  <FontAwesomeIcon icon={faCheck} />
-                  UŽBAIGTI ŽINGSNĮ
-                </TimerButton>
-              </TimerControls>
+            <ModalBody>
+              <Timer>
+                <div className="timer-display">
+                  <FontAwesomeIcon icon={faClock} style={{ marginRight: '15px' }} />
+                  {formatTime(timeElapsed)}
+                </div>
+                <div className="timer-controls">
+                  <TimerButton onClick={handleToggleTimer}>
+                    <FontAwesomeIcon icon={isTimerRunning ? faPause : faPlay} />
+                  </TimerButton>
+                  <TimerButton onClick={handleResetTimer} className="stop">
+                    <FontAwesomeIcon icon={faStop} />
+                  </TimerButton>
+                </div>
+              </Timer>
               
-              <ProgressBar $progress={calculateProgress()}>
-                <div className="progress"></div>
-              </ProgressBar>
-            </TimerSection>
-            
-            <ContentGrid>
-              <SubtasksSection>
+              <SubtaskList>
                 <h3>
-                  <FontAwesomeIcon icon={faListUl} />
-                  UŽDUOTIES IŠSKAIDYMAS
+                  <FontAwesomeIcon icon={faCheckCircle} />
+                  Užduoties žingsniai:
                 </h3>
-                <SubtaskList>
-                  {task.subtasks && task.subtasks.map((subtask, index) => {
-                    const subtaskText = typeof subtask === 'string' ? subtask : (subtask.text || '');
-                    const isActive = index === currentSubtaskIndex;
-                    const isCompleted = task.subtasksCompleted && task.subtasksCompleted[index];
-                    
-                    return (
-                      <SubtaskItem 
-                        key={`modal-subtask-${index}`}
-                        className={`${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
-                      >
-                        <div className="subtask-number">{index + 1}</div>
-                        <div className="subtask-content">
-                          {subtaskText}
-                          {subtask.timeEstimate && (
-                            <div className="subtask-time">
-                              <FontAwesomeIcon icon={faClock} />
-                              {formatTimeEstimate(subtask.timeEstimate)}
-                            </div>
-                          )}
-                        </div>
-                        {isActive && <CurrentSubtaskHighlight>DABARTINIS</CurrentSubtaskHighlight>}
-                      </SubtaskItem>
-                    );
-                  })}
-                </SubtaskList>
-              </SubtasksSection>
+                
+                {task.subtasks && task.subtasks.map((subtask, index) => (
+                  <SubtaskItem 
+                    key={index} 
+                    $completed={completedSubtasks[index]}
+                    as={motion.div}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <FontAwesomeIcon 
+                      icon={completedSubtasks[index] ? faCheckCircle : faCircle} 
+                      className="subtask-checkbox"
+                      onClick={() => handleSubtaskToggle(index)}
+                    />
+                    <span className="subtask-text">
+                      {typeof subtask === 'string' ? subtask : subtask.text}
+                    </span>
+                    <span className="subtask-time">
+                      <FontAwesomeIcon icon={faClock} />
+                      {typeof subtask === 'string' ? '10' : subtask.timeEstimate} min
+                    </span>
+                  </SubtaskItem>
+                ))}
+              </SubtaskList>
               
-              <TipsSection>
-                <h3>
-                  <FontAwesomeIcon icon={faLightbulb} />
-                  VYKDYMO PATARIMAI
-                </h3>
-                <Tips 
-                  key={`tips-${task?.id}-${currentSubtaskIndex}`}
-                  tips={tips} 
-                  loading={tipsLoading} 
-                  error={tipsError} 
-                  onRefresh={refreshTips}
-                  isFromDomainCache={isFromDomainCache}
-                />
-              </TipsSection>
-            </ContentGrid>
+              <CompletionSection>
+                <div className="completion-title">
+                  <FontAwesomeIcon icon={faTrophy} />
+                  Užduoties progresas
+                </div>
+                
+                <div className="completion-stats">
+                  <span>
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                    {task.subtasks ? completedSubtasks.filter(Boolean).length : (completedSubtasks[0] ? 1 : 0)} iš {task.subtasks ? task.subtasks.length : 1} žingsnių
+                  </span>
+                  <span>
+                    <FontAwesomeIcon icon={faStopwatch} />
+                    {formatTime(timeElapsed)} laikas
+                  </span>
+                </div>
+                
+                <div className="progress-container">
+                  <div 
+                    className="progress-bar" 
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {showCompletionMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{
+                        backgroundColor: 'rgba(0, 200, 0, 0.1)',
+                        padding: '15px',
+                        marginTop: '15px',
+                        borderLeft: '5px solid var(--completed-color)',
+                        color: 'var(--completed-color)',
+                        fontFamily: "'Bebas Neue', sans-serif",
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        fontSize: '1.2rem',
+                        letterSpacing: '0.8px',
+                        boxShadow: '3px 3px 0 rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCalendarCheck} size="lg" />
+                      <span>Puiku! Visi žingsniai užbaigti. Galite pažymėti užduotį kaip atliktą.</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CompletionSection>
+              
+              <CompleteButton
+                onClick={handleTaskComplete}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={!allCompleted}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+                Užbaigti užduotį
+              </CompleteButton>
+            </ModalBody>
           </ModalContent>
         </ModalOverlay>
       )}
@@ -1142,4 +649,4 @@ const TaskStartModal = ({ task, isOpen, onClose, onCompleteSubtask }) => {
   );
 };
 
-export default TaskStartModal; 
+export default TaskStartModal;
