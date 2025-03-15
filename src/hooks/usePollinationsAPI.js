@@ -74,28 +74,50 @@ export const usePollinationsImage = (prompt, options = {}) => {
   const [error, setError] = useState(null);
 
   const { 
-    width = 512, 
-    height = 512, 
+    width = 1024,
+    height = 1024,
     model = 'flux', 
     seed = null,
     nologo = true,
     enhance = true
   } = options;
 
+  // Add a function to reset image state
+  const resetImage = () => {
+    console.log('Resetting image generation state');
+    setImageUrl(null);
+    setLoading(false);
+    setError(null);
+  };
+
   useEffect(() => {
     const generateImage = async () => {
       if (!prompt) return;
 
+      console.log('Image generation started with prompt:', prompt);
       setLoading(true);
       setError(null);
 
       try {
-        let url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&model=${model}`;
+        // Clean up the prompt if needed
+        const cleanPrompt = prompt.trim();
+        
+        // Always enforce 1024x1024 and enhancement
+        const finalWidth = 1024;
+        const finalHeight = 1024;
+        const finalEnhance = true;
+        
+        // Construct the URL with parameters
+        let url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}?width=${finalWidth}&height=${finalHeight}&model=${model}`;
         
         if (seed) url += `&seed=${seed}`;
         if (nologo) url += '&nologo=true';
-        if (enhance) url += '&enhance=true';
+        // Always add enhance parameter regardless of options
+        url += '&enhance=true';
 
+        console.log('Generated image URL:', url);
+        
+        // Set the URL which will load the image
         setImageUrl(url);
       } catch (err) {
         console.error('Error with Pollinations Image API:', err);
@@ -108,7 +130,8 @@ export const usePollinationsImage = (prompt, options = {}) => {
     generateImage();
   }, [prompt, width, height, model, seed, nologo, enhance]);
 
-  return { imageUrl, loading, error };
+  // Return the resetImage function along with the other values
+  return { imageUrl, loading, error, resetImage };
 };
 
 // Helper function to generate task breakdown
